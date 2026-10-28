@@ -1,0 +1,177 @@
+/* ===========================================================================
+ * Albums — compact shelf with on-demand Spotify embeds.
+ * ========================================================================= */
+
+.albums {
+  border-top: 1px solid var(--color-line);
+}
+
+.albums__inner {
+  padding-block: var(--space-7) var(--space-9);
+}
+
+.albums__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.albums__label::before {
+  content: "";
+  width: 0.6em;
+  height: 0.6em;
+  background: var(--color-accent);
+}
+
+.albums__list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+  padding: 0;
+  list-style: none;
+  align-items: start;
+}
+
+.album {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+.album__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+}
+
+.album__cover {
+  flex: none;
+  width: 3.5rem;
+  height: 3.5rem;
+  object-fit: cover;
+  border-radius: var(--radius);
+  background: var(--color-surface-raised);
+}
+
+.album__meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.album__title {
+  font-weight: 800;
+  font-stretch: 112%;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.album__artist {
+  color: var(--color-text-faint);
+}
+
+.album__spotify {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: none;
+  color: var(--color-text-muted);
+  transition: color var(--duration-fast) var(--ease);
+}
+
+.album__spotify:hover {
+  color: var(--color-text);
+}
+
+.album__toggle {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.45rem 0.85rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  transition:
+    border-color var(--duration-fast) var(--ease),
+    color var(--duration-fast) var(--ease);
+}
+
+.album__toggle:hover,
+.album__toggle[aria-expanded="true"] {
+  border-color: var(--color-accent);
+  color: var(--color-text);
+}
+
+.album__chevron {
+  transition: transform var(--duration-fast) var(--ease);
+}
+
+.album__chevron--open {
+  transform: rotate(180deg);
+}
+
+.album__player {
+  padding: 0 var(--space-4) var(--space-4);
+  animation: album-open 0.3s var(--ease) both;
+}
+
+.album__player iframe {
+  display: block;
+  width: 100%;
+  border: 0;
+  /* Rounded corners per the official Spotify embed. */
+  border-radius: 12px;
+}
+
+@keyframes album-open {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------------------------------------------------------- Responsive --- */
+
+@media (max-width: 56rem) {
+  .albums__list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 40rem) {
+  .album__bar {
+    flex-wrap: wrap;
+    row-gap: var(--space-3);
+  }
+
+  .album__spotify {
+    margin-left: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .album__player {
+    animation: none;
+  }
+
+  .album__chevron {
+    transition: none;
+  }
+}

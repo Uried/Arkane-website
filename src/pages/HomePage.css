@@ -22,6 +22,7 @@
   object-position: var(--hero-object, 68% 50%);
   /* House rule: background imagery stays strictly monochrome. */
   filter: grayscale(1) contrast(1.04) brightness(0.92);
+  will-change: transform;
 }
 
 .hero__overlay {
@@ -183,6 +184,7 @@
   object-fit: cover;
   object-position: var(--interlude-object, 50% 60%);
   filter: grayscale(1) contrast(1.04) brightness(0.9);
+  will-change: transform;
 }
 
 .interlude__caption {
@@ -255,12 +257,148 @@
   max-width: 56rem;
 }
 
+.release {
+  position: relative;
+}
+
 .release-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.release-card__link {
   position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
   color: var(--color-text);
+}
+
+/* ---- Integrated player (Spotify iFrame API) + external platform link ---- */
+
+.release-player {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.release-player__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.release-player__toggle {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-text);
+  transition:
+    background-color var(--duration-fast) var(--ease),
+    border-color var(--duration-fast) var(--ease),
+    transform var(--duration-fast) var(--ease);
+}
+
+.release-player__toggle:hover:not(:disabled) {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  transform: scale(1.06);
+}
+
+.release-player__toggle:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.release-player__spinner {
+  animation: release-spin 0.9s linear infinite;
+}
+
+@keyframes release-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.release-player__track {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.release-player__bar {
+  flex: 1;
+  height: 2px;
+  overflow: hidden;
+  background: var(--color-line);
+}
+
+.release-player__bar span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--color-text);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s linear;
+}
+
+.release-player__time,
+.release-player__status {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-faint);
+  white-space: nowrap;
+}
+
+.release-player__status--error {
+  color: var(--color-accent-strong);
+}
+
+.release-player__open {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  transition: color var(--duration-fast) var(--ease);
+}
+
+.release-player__open:hover {
+  color: var(--color-text);
+}
+
+/* Collapsed until the first play mounts the official embed. */
+.release-player__embed {
+  height: 0;
+  overflow: hidden;
+  transition: height var(--duration-slow) var(--ease);
+}
+
+.release-player__embed--open {
+  height: 152px;
+}
+
+.release-player__slot iframe {
+  display: block;
+  width: 100%;
+  height: 152px;
+  border: 0;
+  border-radius: 12px;
 }
 
 .release-card__media {
@@ -374,6 +512,7 @@
   line-height: 1.02;
   letter-spacing: -0.03em;
   text-wrap: balance;
+  will-change: transform, opacity;
 }
 
 /* The last rule closes the list: full white, accent index. */

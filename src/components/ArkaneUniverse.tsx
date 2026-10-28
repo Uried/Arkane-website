@@ -1,6 +1,6 @@
-import type { CSSProperties, ReactElement } from "react";
+import { useRef, type CSSProperties, type ReactElement } from "react";
+import { gsap, useGSAP } from "../lib/gsap";
 import Logo from "./Logo";
-import Reveal from "./Reveal";
 import "./ArkaneUniverse.css";
 
 /* Abstract sound glyphs, drawn around (0, 0) within ~±30 units. */
@@ -125,6 +125,83 @@ interface ArkaneUniverseProps {
 
 /** Convergence: distinct sound sources meet in Arkane, then carry on as one signal. */
 export default function ArkaneUniverse({ label }: ArkaneUniverseProps) {
+  const stageRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+
+      mm.add(
+        "(prefers-reduced-motion: no-preference)",
+        () => {
+          const stage = stageRef.current;
+
+          /* Scroll-drawn convergence: sources appear, links trace into the
+           * core, the mark materialises, then the signal carries on. */
+          const tl = gsap.timeline({
+            defaults: { ease: "power2.out" },
+            scrollTrigger: {
+              trigger: stage,
+              start: "top 82%",
+              end: "bottom 58%",
+              scrub: 0.8,
+              onUpdate: (self) => {
+                /* Travelling pulses only once the composition is whole. */
+                stage?.classList.toggle(
+                  "universe--live",
+                  self.progress >= 1,
+                );
+              },
+            },
+          });
+
+          tl.from(".universe__node", {
+            autoAlpha: 0,
+            scale: 0.55,
+            transformOrigin: "50% 50%",
+            duration: 0.4,
+            stagger: 0.07,
+          })
+            .fromTo(
+              ".universe__link",
+              { strokeDashoffset: 1 },
+              {
+                strokeDashoffset: 0,
+                duration: 0.9,
+                stagger: 0.08,
+                ease: "power2.inOut",
+              },
+              0.12,
+            )
+            .from(".universe__halo, .universe__core", {
+              autoAlpha: 0,
+              duration: 0.35,
+            }, "-=0.4")
+            .from(".universe__logo", {
+              autoAlpha: 0,
+              scale: 0.86,
+              duration: 0.5,
+            }, "-=0.15")
+            .fromTo(
+              ".universe__flow",
+              { strokeDashoffset: 1 },
+              {
+                strokeDashoffset: 0,
+                duration: 0.85,
+                stagger: 0.1,
+                ease: "power2.inOut",
+              },
+              "-=0.25",
+            );
+        },
+        stageRef,
+      );
+
+      return () => mm.revert();
+    },
+    { scope: stageRef },
+  );
+
   return (
     <section className="universe" aria-labelledby="universe-heading">
       <div className="universe__inner container">
@@ -133,11 +210,13 @@ export default function ArkaneUniverse({ label }: ArkaneUniverseProps) {
         </h2>
       </div>
 
-      <Reveal className="universe__stage">
+      <div className="universe__stage" ref={stageRef}>
         <Composition layout={horizontal} className="universe__svg--h" />
         <Composition layout={vertical} className="universe__svg--v" />
-        <Logo className="universe__logo" />
-      </Reveal>
+        <div className="universe__logo-wrap">
+          <Logo className="universe__logo" />
+        </div>
+      </div>
     </section>
   );
 }

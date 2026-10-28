@@ -61,6 +61,10 @@ export interface ReleaseFeature {
   kind: ReleaseKind;
   coverUrl: string;
   alt: string;
+  /** External listening destination for this release, when one is known. */
+  listenUrl?: string;
+  /** Spotify URI (spotify:album:…) for the integrated embed player. */
+  spotifyUri?: string;
 }
 
 export interface ReleasesContent {

@@ -1,8 +1,10 @@
 import { ArrowRight } from "lucide-react";
-import type { CSSProperties } from "react";
+import { useRef, type CSSProperties } from "react";
 import ArkaneUniverse from "../components/ArkaneUniverse";
+import ReleasePlayer from "../components/ReleasePlayer";
 import Reveal from "../components/Reveal";
 import { homeContent } from "../data/site";
+import { gsap, ScrollTrigger, useGSAP } from "../lib/gsap";
 import "./HomePage.css";
 
 const { hero, universe, rules, interlude, releases, outro } = homeContent;
@@ -34,8 +36,108 @@ function HeroTitle() {
 }
 
 export default function HomePage() {
+  const scope = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+
+      mm.add(
+        "(prefers-reduced-motion: no-preference)",
+        () => {
+          /* Hero — the image lags the scroll, the content lifts away. */
+          gsap.set(".hero__image", { scale: 1.22 });
+          gsap.to(".hero__image", {
+            yPercent: 10,
+            ease: "none",
+            scrollTrigger: {
+              trigger: ".hero",
+              start: "top top",
+              end: "bottom top",
+              scrub: true,
+            },
+          });
+          gsap.to(".hero__content", {
+            yPercent: -14,
+            autoAlpha: 0,
+            ease: "none",
+            scrollTrigger: {
+              trigger: ".hero",
+              start: "top top",
+              end: "70% top",
+              scrub: true,
+            },
+          });
+
+          /* Interlude — slow drift through the frame. */
+          gsap.set(".interlude__image", { scale: 1.16 });
+          gsap.fromTo(
+            ".interlude__image",
+            { yPercent: -7 },
+            {
+              yPercent: 7,
+              ease: "none",
+              scrollTrigger: {
+                trigger: ".interlude",
+                start: "top bottom",
+                end: "bottom top",
+                scrub: true,
+              },
+            },
+          );
+
+          /* Rules — each line condenses out of the dark as it crosses. */
+          scope.current
+            ?.querySelectorAll<HTMLElement>(".rules__row")
+            .forEach((row) => {
+              const text = row.querySelector(".rules__text");
+              const index = row.querySelector(".rules__index");
+              if (!text || !index) return;
+
+              gsap.fromTo(
+                text,
+                { autoAlpha: 0.13, y: 26 },
+                {
+                  autoAlpha: 1,
+                  y: 0,
+                  ease: "none",
+                  scrollTrigger: {
+                    trigger: row,
+                    start: "top 92%",
+                    end: "top 58%",
+                    scrub: true,
+                  },
+                },
+              );
+              gsap.fromTo(
+                index,
+                { autoAlpha: 0 },
+                {
+                  autoAlpha: 1,
+                  ease: "none",
+                  scrollTrigger: {
+                    trigger: row,
+                    start: "top 92%",
+                    end: "top 74%",
+                    scrub: true,
+                  },
+                },
+              );
+            });
+        },
+        scope,
+      );
+
+      /* Re-measure trigger positions once webfonts settle the layout. */
+      document.fonts?.ready.then(() => ScrollTrigger.refresh());
+
+      return () => mm.revert();
+    },
+    { scope },
+  );
+
   return (
-    <>
+    <div ref={scope}>
       {/* ---------------------------------------------------------- Hero */}
       <section className="hero" aria-labelledby="hero-title">
         <img
@@ -113,37 +215,45 @@ export default function HomePage() {
 
           <ul role="list" className="releases__grid">
             {releases.items.map((release, i) => (
-              <li key={release.title}>
+              <li key={release.title} className="release">
                 <Reveal delay={i * 120}>
-                  <a
-                    className="release-card"
-                    href={releases.moreLink.path}
-                    aria-label={`${release.title}${release.artist ? ` — ${release.artist}` : ""}`}
-                  >
-                    <span className="release-card__media">
-                      <img
-                        className="release-card__cover"
-                        src={release.coverUrl}
-                        alt=""
-                        loading="lazy"
+                  <article className="release-card">
+                    <a
+                      className="release-card__link"
+                      href={releases.moreLink.path}
+                      aria-label={`${release.title}${release.artist ? ` — ${release.artist}` : ""}`}
+                    >
+                      <span className="release-card__media">
+                        <img
+                          className="release-card__cover"
+                          src={release.coverUrl}
+                          alt=""
+                          loading="lazy"
+                        />
+                      </span>
+                      <span className="release-card__meta">
+                        <span className="release-card__title">
+                          {release.title}
+                        </span>
+                        <span className="release-card__sub label">
+                          {[release.artist, release.kind]
+                            .filter(Boolean)
+                            .join(" · ")}
+                        </span>
+                      </span>
+                      <ArrowRight
+                        className="release-card__arrow"
+                        size={18}
+                        aria-hidden="true"
                       />
-                    </span>
-                    <span className="release-card__meta">
-                      <span className="release-card__title">
-                        {release.title}
-                      </span>
-                      <span className="release-card__sub label">
-                        {[release.artist, release.kind]
-                          .filter(Boolean)
-                          .join(" · ")}
-                      </span>
-                    </span>
-                    <ArrowRight
-                      className="release-card__arrow"
-                      size={18}
-                      aria-hidden="true"
+                    </a>
+                    <ReleasePlayer
+                      id={release.title}
+                      title={release.title}
+                      spotifyUri={release.spotifyUri}
+                      listenUrl={release.listenUrl}
                     />
-                  </a>
+                  </article>
                 </Reveal>
               </li>
             ))}
@@ -163,12 +273,12 @@ export default function HomePage() {
           <ol className="rules__list">
             {rules.items.map((rule, i) => (
               <li key={rule} className="rules__item">
-                <Reveal className="rules__row" delay={i * 90}>
+                <div className="rules__row">
                   <span className="rules__index" aria-hidden="true">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <p className="rules__text">{rule}</p>
-                </Reveal>
+                </div>
               </li>
             ))}
           </ol>
@@ -199,6 +309,6 @@ export default function HomePage() {
           </Reveal>
         </div>
       </section>
-    </>
+    </div>
   );
 }

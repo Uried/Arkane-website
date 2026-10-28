@@ -1,0 +1,436 @@
+/* ===========================================================================
+ * Artistes — compact label catalog.
+ *
+ * Desktop: auto-filling grid of tight tiles (portrait + controls).
+ * Mobile: horizontal rows (thumb + body) built for thumbs and scanning.
+ * Portraits keep their authentic treatment under a light unifying grade.
+ * ========================================================================= */
+
+/* ------------------------------------------------------------- Hero ------ */
+
+.artists-hero {
+  border-bottom: 1px solid var(--color-line);
+}
+
+.artists-hero__inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--space-6);
+  min-height: 56svh;
+  padding-block: var(--space-8) var(--space-6);
+}
+
+.artists-hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.artists-hero__eyebrow::before {
+  content: "";
+  width: 0.6em;
+  height: 0.6em;
+  background: var(--color-accent);
+}
+
+.artists-hero__title {
+  font-size: clamp(3.75rem, 14.5vw, 12.5rem);
+  font-weight: 900;
+  font-stretch: 118%;
+  text-transform: uppercase;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+}
+
+.artists-hero__title-mask {
+  display: block;
+  overflow: hidden;
+}
+
+.artists-hero__char {
+  display: inline-block;
+  will-change: transform;
+}
+
+.artists-hero__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.artists-hero__rule {
+  flex: 1;
+  height: 1px;
+  background: var(--color-line-strong);
+  transform-origin: left;
+}
+
+.artists-hero__count {
+  color: var(--color-text);
+}
+
+/* ------------------------------------------------------------ Toolbar ---- */
+
+.artists__inner {
+  padding-block: var(--space-6) var(--space-9);
+}
+
+.artists__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-bottom: var(--space-5);
+}
+
+.artists__filter {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-faint);
+  border-bottom: 1px solid var(--color-line);
+  transition: border-color var(--duration-fast) var(--ease);
+}
+
+.artists__filter:focus-within {
+  border-color: var(--color-line-strong);
+  color: var(--color-text-muted);
+}
+
+.artists__filter-input {
+  width: 12rem;
+  max-width: 40vw;
+  padding: var(--space-2) 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text);
+}
+
+.artists__filter-input::placeholder {
+  color: var(--color-text-faint);
+  text-transform: uppercase;
+}
+
+.artists__filter-input::-webkit-search-cancel-button {
+  filter: invert(1);
+}
+
+.artists__count {
+  color: var(--color-text-faint);
+}
+
+.artists__empty {
+  padding-block: var(--space-8);
+  color: var(--color-text-faint);
+}
+
+/* --------------------------------------------------------------- Grid ---- */
+
+.artists__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  gap: var(--space-6) var(--space-5);
+  padding: 0;
+  list-style: none;
+}
+
+/* --------------------------------------------------------------- Tile ---- */
+
+.artist-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.artist-tile__media {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--color-surface);
+}
+
+.artist-tile__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--artist-object, 50% 40%);
+  /* Light unifying grade — portraits keep their authentic treatment. */
+  filter: saturate(0.8) contrast(1.06) brightness(0.95);
+  transition: transform var(--duration-slow) var(--ease);
+}
+
+.artist-tile:hover .artist-tile__img {
+  transform: scale(1.04);
+}
+
+/* Playing state — accent frame + travelling signal bars. */
+.artist-tile--playing .artist-tile__media {
+  outline: 1px solid var(--color-accent);
+  outline-offset: -1px;
+}
+
+.artist-tile__eq {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  display: none;
+  align-items: flex-end;
+  gap: 2px;
+  height: 0.85rem;
+}
+
+.artist-tile--playing .artist-tile__eq {
+  display: inline-flex;
+}
+
+.artist-tile__eq span {
+  width: 2px;
+  height: 100%;
+  background: var(--color-text);
+  transform-origin: bottom;
+  animation: artist-eq 0.9s ease-in-out infinite alternate;
+}
+
+.artist-tile__eq span:nth-child(2) {
+  animation-delay: 0.22s;
+}
+
+.artist-tile__eq span:nth-child(3) {
+  animation-delay: 0.44s;
+}
+
+@keyframes artist-eq {
+  from {
+    transform: scaleY(0.25);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+.artist-tile__play {
+  position: absolute;
+  left: var(--space-3);
+  bottom: var(--space-3);
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 50%;
+  background: rgba(5, 5, 5, 0.72);
+  backdrop-filter: blur(6px);
+  color: var(--color-text);
+  transition:
+    background-color var(--duration-fast) var(--ease),
+    border-color var(--duration-fast) var(--ease),
+    transform var(--duration-fast) var(--ease);
+}
+
+.artist-tile__play:hover:not(:disabled) {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  transform: scale(1.06);
+}
+
+.artist-tile__play:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.artist-tile__spinner {
+  animation: artist-spin 0.9s linear infinite;
+}
+
+@keyframes artist-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---- Tile body ---- */
+
+.artist-tile__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.artist-tile__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.artist-tile__name {
+  font-size: var(--text-lg);
+  font-weight: 800;
+  font-stretch: 112%;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.artist-tile__listen {
+  flex: none;
+  padding: 0.45rem 0.85rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  transition:
+    border-color var(--duration-fast) var(--ease),
+    color var(--duration-fast) var(--ease);
+}
+
+.artist-tile__listen:hover,
+.artist-tile__listen[aria-expanded="true"] {
+  border-color: var(--color-accent);
+  color: var(--color-text);
+}
+
+.artist-tile__status {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-faint);
+}
+
+.artist-tile__status--error {
+  color: var(--color-accent-strong);
+}
+
+.artist-tile__progress {
+  width: 100%;
+  margin-top: var(--space-1);
+  accent-color: var(--color-accent-strong);
+}
+
+/* ---- Platform menu ---- */
+
+.artist-tile__menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + var(--space-2));
+  z-index: 30;
+  min-width: 12rem;
+  padding: var(--space-2);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  background: var(--color-surface-raised);
+  box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.55);
+}
+
+.artist-tile__platform {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-muted);
+  transition:
+    background-color var(--duration-fast) var(--ease),
+    color var(--duration-fast) var(--ease);
+}
+
+.artist-tile__platform:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--color-text);
+}
+
+.artist-tile__menu-empty {
+  padding: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-faint);
+}
+
+/* ---------------------------------------------------------- Responsive --- */
+
+/* Mobile: compact horizontal rows — thumb left, body right. */
+@media (max-width: 40rem) {
+  .artists-hero__inner {
+    min-height: 44svh;
+    gap: var(--space-5);
+    padding-block: var(--space-7) var(--space-5);
+  }
+
+  .artists-hero__title {
+    font-size: clamp(3rem, 17vw, 6.5rem);
+  }
+
+  .artists__grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .artist-tile {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-4);
+    padding-block: var(--space-4);
+  }
+
+  .artist-tile + .artist-tile {
+    border-top: 1px solid var(--color-line);
+  }
+
+  .artist-tile__media {
+    flex: none;
+    width: 5rem;
+  }
+
+  .artist-tile__body {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+  }
+
+  .artist-tile__name {
+    font-size: var(--text-base);
+  }
+
+  .artist-tile__menu {
+    left: 0;
+    right: auto;
+    top: calc(100% + var(--space-3));
+    min-width: min(16rem, calc(100vw - 2 * var(--gutter)));
+  }
+}
+
+/* --------------------------------------------------- Reduced motion ------ */
+
+@media (prefers-reduced-motion: reduce) {
+  .artist-tile__img {
+    transition: none;
+  }
+
+  .artist-tile:hover .artist-tile__img {
+    transform: none;
+  }
+
+  .artist-tile__eq span,
+  .artist-tile__spinner {
+    animation: none;
+  }
+
+  .artist-tile__eq span {
+    transform: scaleY(0.6);
+  }
+}

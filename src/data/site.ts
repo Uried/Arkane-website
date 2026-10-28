@@ -1,6 +1,7 @@
 import type { HomeContent, NavItem, SiteConfig } from "../types";
 import abats5Cover from "../../assets/Abats5-cover-album.jpg";
 import dossierNoirCover from "../../assets/Dossier-noir-cover.jpg";
+import { spotifyAlbums } from "./albums";
 
 /**
  * Single source of truth for brand-level content.
@@ -75,6 +76,8 @@ export const homeContent: HomeContent = {
         kind: "album",
         coverUrl: abats5Cover,
         alt: "Album cover — Abats 5",
+        listenUrl: spotifyAlbums.find((a) => a.id === "abats-5")?.spotifyUrl,
+        spotifyUri: spotifyAlbums.find((a) => a.id === "abats-5")?.spotifyUri,
       },
       {
         title: "Dossier Noir",
@@ -82,6 +85,9 @@ export const homeContent: HomeContent = {
         kind: "album",
         coverUrl: dossierNoirCover,
         alt: "Album cover — Dossier Noir, Elite Secret",
+        listenUrl: "https://bfan.link/dossier-noir",
+        spotifyUri: spotifyAlbums.find((a) => a.id === "dossier-noir")
+          ?.spotifyUri,
       },
     ],
     moreLink: { label: "All releases", path: "/releases" },
