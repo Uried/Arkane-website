@@ -1,0 +1,14 @@
+.logo {
+  height: 2rem;
+  width: auto;
+  object-fit: contain;
+  /* The mark is a white glyph on pure black; blending removes the JPEG box. */
+  mix-blend-mode: screen;
+  user-select: none;
+}
+
+.logo--lockup {
+  height: auto;
+  width: 100%;
+  max-width: 22rem;
+}

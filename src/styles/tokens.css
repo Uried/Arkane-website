@@ -1,0 +1,69 @@
+/* ---------------------------------------------------------------------------
+ * Arkane Production — design tokens
+ * Black-first identity: #050505 base, #FFFFFF contrast, #C8102E accent.
+ * ------------------------------------------------------------------------- */
+:root {
+  /* Color */
+  --color-bg: #050505;
+  --color-surface: #0c0c0c;
+  --color-surface-raised: #121212;
+  --color-text: #ffffff;
+  --color-text-muted: rgba(255, 255, 255, 0.62);
+  --color-text-faint: rgba(255, 255, 255, 0.38);
+  --color-accent: #c8102e;
+  --color-accent-strong: #f01d3d;
+  --color-line: rgba(255, 255, 255, 0.14);
+  --color-line-strong: rgba(255, 255, 255, 0.32);
+
+  /* Typography */
+  --font-sans: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+
+  /* Fluid display sizes — cinematic scale */
+  --display-sm: clamp(1.75rem, 3vw + 1rem, 2.75rem);
+  --display-md: clamp(2.5rem, 5vw + 1rem, 4.5rem);
+  --display-lg: clamp(3.25rem, 8vw + 1rem, 7rem);
+  --display-xl: clamp(4rem, 13vw + 1rem, 12rem);
+
+  --tracking-tight: -0.02em;
+  --tracking-wide: 0.08em;
+  --tracking-wider: 0.18em;
+  --tracking-widest: 0.32em;
+
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --space-10: 8rem;
+
+  /* Layout */
+  --container-max: 82rem;
+  --gutter: clamp(1.25rem, 4vw, 3rem);
+  --header-height: 4.5rem;
+
+  /* Shape — sharp, cinematic */
+  --radius: 2px;
+
+  /* Motion */
+  --ease: cubic-bezier(0.22, 0.61, 0.21, 1);
+  --duration-fast: 0.15s;
+  --duration: 0.3s;
+  --duration-slow: 0.6s;
+
+  /* Elevation */
+  --z-header: 50;
+  --z-menu: 60;
+}
