@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import CartDrawer from "../components/CartDrawer";
 import Header from "./Header";
 import Footer from "./Footer";
 
@@ -19,6 +20,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
       <Header />
       <main id="main">{children}</main>
       <Footer />
+      <CartDrawer />
     </>
   );
 }

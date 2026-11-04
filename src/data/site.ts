@@ -1,7 +1,5 @@
 import type { HomeContent, NavItem, SiteConfig } from "../types";
-import abats5Cover from "../../assets/Abats5-cover-album.jpg";
-import dossierNoirCover from "../../assets/Dossier-noir-cover.jpg";
-import { spotifyAlbums } from "./albums";
+import { getRelease, type ReleaseEntry } from "./releases";
 
 /**
  * Single source of truth for brand-level content.
@@ -13,6 +11,7 @@ export const navItems: NavItem[] = [
   { label: "Artists", path: "/artists" },
   { label: "Releases", path: "/releases" },
   { label: "Editorial", path: "/editorial" },
+  { label: "Contact", path: "/contact" },
   { label: "Shop", path: "/shop" },
 ];
 
@@ -27,10 +26,14 @@ export const siteConfig: SiteConfig = {
   nav: navItems,
 };
 
+/* Homepage releases feature the latest entries of the canonical catalog
+ * (src/data/releases.ts) — same source as the Discography page. */
+const featuredReleases = ["abats-5", "dossier-noir"]
+  .map(getRelease)
+  .filter((r): r is ReleaseEntry => Boolean(r));
+
 /**
  * Homepage content — phase 01.
- * Release titles/artists are derived from the artwork files themselves
- * (assets/) pending confirmed metadata; replace when the catalog is final.
  */
 export const homeContent: HomeContent = {
   hero: {
@@ -70,26 +73,15 @@ export const homeContent: HomeContent = {
   releases: {
     label: "Releases",
     heading: "Pressed by the house.",
-    items: [
-      {
-        title: "Abats 5",
-        kind: "album",
-        coverUrl: abats5Cover,
-        alt: "Album cover — Abats 5",
-        listenUrl: spotifyAlbums.find((a) => a.id === "abats-5")?.spotifyUrl,
-        spotifyUri: spotifyAlbums.find((a) => a.id === "abats-5")?.spotifyUri,
-      },
-      {
-        title: "Dossier Noir",
-        artist: "Elite Secret",
-        kind: "album",
-        coverUrl: dossierNoirCover,
-        alt: "Album cover — Dossier Noir, Elite Secret",
-        listenUrl: "https://bfan.link/dossier-noir",
-        spotifyUri: spotifyAlbums.find((a) => a.id === "dossier-noir")
-          ?.spotifyUri,
-      },
-    ],
+    items: featuredReleases.map((release) => ({
+      title: release.title,
+      artist: release.artistName,
+      kind: release.kind,
+      coverUrl: release.coverUrl,
+      alt: release.coverAlt,
+      listenUrl: release.listenUrl,
+      spotifyUri: release.spotifyUri,
+    })),
     moreLink: { label: "All releases", path: "/releases" },
   },
   outro: {

@@ -71,6 +71,37 @@
   transform: scaleX(1);
 }
 
+/* Cart trigger — always visible, badge shows item count. */
+.site-header__cart-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-2);
+  color: var(--color-text);
+  transition: color var(--duration-fast) var(--ease);
+}
+
+.site-header__cart-btn:hover {
+  color: var(--color-accent-strong);
+}
+
+.site-header__cart-badge {
+  position: absolute;
+  top: 0;
+  right: -0.15rem;
+  display: grid;
+  place-items: center;
+  min-width: 1rem;
+  height: 1rem;
+  padding-inline: 0.2rem;
+  background: var(--color-accent);
+  border-radius: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0;
+  color: var(--color-text);
+}
+
 /* Mobile menu */
 .site-header__menu-btn {
   display: none;

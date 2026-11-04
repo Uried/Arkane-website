@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, ShoppingBag, X } from "lucide-react";
 import Logo from "../components/Logo";
 import { siteConfig } from "../data/site";
+import { useCart } from "../lib/cart-store";
 import "./Header.css";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { count, setOpen } = useCart();
 
   return (
     <header className="site-header">
@@ -31,6 +33,20 @@ export default function Header() {
             ))}
           </ul>
         </nav>
+
+        <button
+          type="button"
+          className="site-header__cart-btn"
+          aria-label={`Panier, ${count} article${count > 1 ? "s" : ""}`}
+          onClick={() => setOpen(true)}
+        >
+          <ShoppingBag size={20} />
+          {count > 0 && (
+            <span className="site-header__cart-badge" aria-hidden="true">
+              {count}
+            </span>
+          )}
+        </button>
 
         <button
           type="button"

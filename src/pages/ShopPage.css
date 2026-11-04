@@ -1,0 +1,223 @@
+/* ===========================================================================
+ * Boutique — editorial product grid, black-first.
+ * ========================================================================= */
+
+.shop-hero {
+  border-bottom: 1px solid var(--color-line);
+}
+
+.shop-hero__inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--space-6);
+  min-height: 52svh;
+  padding-block: var(--space-8) var(--space-6);
+}
+
+.shop-hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.shop-hero__eyebrow::before {
+  content: "";
+  width: 0.6em;
+  height: 0.6em;
+  background: var(--color-accent);
+}
+
+.shop-hero__title {
+  font-size: clamp(3.5rem, 13vw, 12rem);
+  font-weight: 900;
+  font-stretch: 118%;
+  text-transform: uppercase;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+}
+
+.shop-hero__title-mask {
+  display: block;
+  overflow: hidden;
+}
+
+.shop-hero__char {
+  display: inline-block;
+  will-change: transform;
+}
+
+.shop-hero__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.shop-hero__rule {
+  flex: 1;
+  height: 1px;
+  background: var(--color-line-strong);
+  transform-origin: left;
+}
+
+.shop-hero__count {
+  color: var(--color-text);
+}
+
+/* ------------------------------------------------------------ Toolbar ---- */
+
+.shop__inner {
+  padding-block: var(--space-6) var(--space-9);
+}
+
+.shop-filter {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding-bottom: var(--space-6);
+}
+
+.shop-filter__btn {
+  padding: 0.45rem 0.9rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  transition:
+    border-color var(--duration-fast) var(--ease),
+    color var(--duration-fast) var(--ease);
+}
+
+.shop-filter__btn:hover {
+  color: var(--color-text);
+}
+
+.shop-filter__btn[aria-pressed="true"] {
+  border-color: var(--color-accent);
+  color: var(--color-text);
+}
+
+.shop__empty {
+  padding-block: var(--space-9);
+  display: flex;
+  justify-content: center;
+}
+
+.shop__empty-note {
+  color: var(--color-text-faint);
+  text-align: center;
+  max-width: 30rem;
+  line-height: 1.8;
+}
+
+/* --------------------------------------------------------------- Grid ---- */
+
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  gap: var(--space-6) var(--space-5);
+  padding: 0;
+  list-style: none;
+}
+
+.shop-tile__link {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  color: var(--color-text);
+}
+
+.shop-tile__media {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--color-surface);
+  border-radius: var(--radius);
+}
+
+.shop-tile__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--shop-object, 50% 40%);
+  filter: saturate(0.8) contrast(1.06) brightness(0.95);
+  transition: transform var(--duration-slow) var(--ease);
+}
+
+.shop-tile__link:hover .shop-tile__img,
+.shop-tile__link:focus-visible .shop-tile__img {
+  transform: scale(1.04);
+}
+
+.shop-tile__flag {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  padding: 0.3rem 0.6rem;
+  background: rgba(5, 5, 5, 0.8);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text);
+}
+
+.shop-tile__flag--accent {
+  border-color: var(--color-accent);
+  color: var(--color-accent-strong);
+}
+
+.shop-tile__flag + .shop-tile__flag {
+  left: auto;
+  right: var(--space-3);
+}
+
+.shop-tile__meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.shop-tile__name {
+  font-weight: 800;
+  font-stretch: 112%;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.shop-tile__price {
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------- Responsive --- */
+
+@media (max-width: 48rem) {
+  .shop-hero__inner {
+    min-height: 42svh;
+    gap: var(--space-5);
+    padding-block: var(--space-7) var(--space-5);
+  }
+
+  .shop-hero__title {
+    font-size: clamp(3rem, 16vw, 6rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shop-tile__img {
+    transition: none;
+  }
+
+  .shop-tile__link:hover .shop-tile__img {
+    transform: none;
+  }
+}
