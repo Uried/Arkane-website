@@ -121,10 +121,12 @@ function Composition({ layout, className }: { layout: Layout; className: string 
 
 interface ArkaneUniverseProps {
   label: string;
+  /** The house rules — one paired with each source glyph, in order. */
+  items: string[];
 }
 
 /** Convergence: distinct sound sources meet in Arkane, then carry on as one signal. */
-export default function ArkaneUniverse({ label }: ArkaneUniverseProps) {
+export default function ArkaneUniverse({ label, items }: ArkaneUniverseProps) {
   const stageRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
@@ -142,8 +144,10 @@ export default function ArkaneUniverse({ label }: ArkaneUniverseProps) {
             defaults: { ease: "power2.out" },
             scrollTrigger: {
               trigger: stage,
-              start: "top 82%",
-              end: "bottom 58%",
+              /* Start earlier, finish sooner: the whole choreography plays
+               * while the composition is still fully in view. */
+              start: "top 92%",
+              end: "bottom 74%",
               scrub: 0.8,
               onUpdate: (self) => {
                 /* Travelling pulses only once the composition is whole. */
@@ -182,6 +186,12 @@ export default function ArkaneUniverse({ label }: ArkaneUniverseProps) {
               scale: 0.86,
               duration: 0.5,
             }, "-=0.15")
+            .from(".universe__rule", {
+              autoAlpha: 0,
+              x: -14,
+              duration: 0.4,
+              stagger: 0.08,
+            }, "-=0.3")
             .fromTo(
               ".universe__flow",
               { strokeDashoffset: 1 },
@@ -216,7 +226,58 @@ export default function ArkaneUniverse({ label }: ArkaneUniverseProps) {
         <div className="universe__logo-wrap">
           <Logo className="universe__logo" />
         </div>
+
+        {/* Desktop — each rule sits right after its source glyph. */}
+        {items.length > 0 && (
+          <ol className="universe__rules" aria-label="Les règles de l'Arkane">
+            {horizontal.nodes.map((node, i) => {
+              const leftPct = ((node.x + 60) / 1200) * 100;
+              /* Right edge stops before the central halo (~42% of viewBox). */
+              const maxWidthPct = Math.max(41 - leftPct, 14);
+              return (
+              <li
+                key={i}
+                className="universe__rule"
+                style={
+                  {
+                    left: `${leftPct}%`,
+                    top: `${(node.y / 520) * 100}%`,
+                    maxWidth: `${maxWidthPct}%`,
+                  } as CSSProperties
+                }
+              >
+                <span className="universe__rule-index" aria-hidden="true">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                {items[i]}
+              </li>
+              );
+            })}
+          </ol>
+        )}
       </div>
+
+      {/* Mobile — paired icon + rule rows below the composition. */}
+      {items.length > 0 && (
+        <ol className="universe__pairs container" role="list">
+          {items.map((rule, i) => (
+            <li key={i} className="universe__pair">
+              <svg
+                className="universe__pair-glyph"
+                viewBox="-34 -34 68 68"
+                aria-hidden="true"
+                focusable="false"
+              >
+                {glyphs[order[i]]}
+              </svg>
+              <span className="universe__pair-index" aria-hidden="true">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <p className="universe__pair-text">{rule}</p>
+            </li>
+          ))}
+        </ol>
+      )}
     </section>
   );
 }

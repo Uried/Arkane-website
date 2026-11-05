@@ -31,7 +31,8 @@
 }
 
 .contact-hero__title {
-  font-size: clamp(3.5rem, 13vw, 12rem);
+  /* 7 chars at wdth ~118% — cqw-sized to always fit the hero container. */
+  font-size: clamp(3.5rem, 15cqw, 12rem);
   font-weight: 900;
   font-stretch: 118%;
   text-transform: uppercase;
@@ -42,6 +43,7 @@
 .contact-hero__title-mask {
   display: block;
   overflow: hidden;
+  white-space: nowrap;
 }
 
 .contact-hero__char {
@@ -123,6 +125,8 @@
 }
 
 .contact-kind__label {
+  min-width: 0;
+  overflow-wrap: break-word;
   font-size: clamp(1.5rem, 3.6vw, 3rem);
   font-weight: 800;
   font-stretch: 114%;
@@ -318,7 +322,7 @@
   }
 
   .contact-hero__title {
-    font-size: clamp(3rem, 16vw, 6rem);
+    font-size: clamp(3rem, 15cqw, 6rem);
   }
 
   .contact-kind {

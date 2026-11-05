@@ -87,8 +87,8 @@ export interface UniverseContent {
 
 export interface RulesContent {
   label: string;
-  /** House rules — displayed verbatim, never corrected or reworded. */
-  items: string[];
+  /** House rules — bilingual variants, order preserved across langs. */
+  items: LocalizedText[];
 }
 
 export interface HomeContent {
@@ -122,6 +122,14 @@ export interface Release {
   artistIds: EntityId[];
   releasedAt?: string;
   coverUrl?: string;
+}
+
+export type Lang = "fr" | "en";
+
+/** A translatable text — canonical fr plus its en counterpart. */
+export interface LocalizedText {
+  fr: string;
+  en: string;
 }
 
 export interface Article {

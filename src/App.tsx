@@ -1,5 +1,6 @@
 import SiteLayout from "./layouts/SiteLayout";
 import { CartProvider } from "./lib/cart";
+import { LanguageProvider } from "./lib/i18n";
 import ArticlePage from "./pages/ArticlePage";
 import ArtistsPage from "./pages/ArtistsPage";
 import CartPage from "./pages/CartPage";
@@ -46,8 +47,10 @@ export default function App() {
   );
 
   return (
-    <CartProvider>
-      <SiteLayout>{page}</SiteLayout>
-    </CartProvider>
+    <LanguageProvider>
+      <CartProvider>
+        <SiteLayout>{page}</SiteLayout>
+      </CartProvider>
+    </LanguageProvider>
   );
 }

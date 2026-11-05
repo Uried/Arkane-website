@@ -41,12 +41,12 @@ export function validateContact(
   values: Omit<ContactPayload, "kind">,
 ): ContactErrors {
   const errors: ContactErrors = {};
-  if (!values.name.trim()) errors.name = "Indique ton nom.";
+  if (!values.name.trim()) errors.name = "contact.err.name";
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim()))
-    errors.email = "Adresse e-mail invalide.";
-  if (!values.subject.trim()) errors.subject = "Indique le sujet.";
+    errors.email = "contact.err.email";
+  if (!values.subject.trim()) errors.subject = "contact.err.subject";
   if (values.message.trim().length < 10)
-    errors.message = "Message trop court (10 caractères minimum).";
+    errors.message = "contact.err.message";
   return errors;
 }
 

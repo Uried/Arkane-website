@@ -16,6 +16,7 @@ import { artists, type ArtistProfile } from "../data/artists";
 import { siteConfig } from "../data/site";
 import { gsap, ScrollTrigger, useGSAP } from "../lib/gsap";
 import "./ArtistsPage.css";
+import { useI18n } from "../lib/i18n-store";
 
 /* --------------------------------------------------------------------------
  * Single shared audio element — guarantees one excerpt at a time.
@@ -50,6 +51,7 @@ const idlePlayer: PlayerState = {
 };
 
 export default function ArtistsPage() {
+  const { t } = useI18n();
   const scope = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [player, setPlayer] = useState<PlayerState>(idlePlayer);
@@ -62,14 +64,14 @@ export default function ArtistsPage() {
 
   /* Page-level SEO — static meta in index.html stays the site default. */
   useEffect(() => {
-    document.title = `Artistes — ${siteConfig.name}`;
+    document.title = `${t("page.artists")} — ${siteConfig.name}`;
     document
       .querySelector('meta[name="description"]')
       ?.setAttribute(
         "content",
         `${siteConfig.name} — artistes : ${artists.map((a) => a.name).join(", ")}.`,
       );
-  }, []);
+  }, [t]);
 
   /* Tear the audio element down with the page. */
   useEffect(
@@ -254,7 +256,7 @@ export default function ArtistsPage() {
 
           <h1 id="artists-title" className="artists-hero__title">
             <span className="artists-hero__title-mask" aria-hidden="true">
-              {"Artistes".split("").map((char, i) => (
+              {t("page.artists").split("").map((char, i) => (
                 <span key={i} className="artists-hero__char">
                   {char}
                 </span>
@@ -283,7 +285,7 @@ export default function ArtistsPage() {
               <input
                 className="artists__filter-input"
                 type="search"
-                placeholder="Rechercher"
+                placeholder={t("action.search")}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
               />
@@ -343,6 +345,7 @@ function ArtistTile({
   onToggleMenu,
   onSeek,
 }: ArtistTileProps) {
+  const { t } = useI18n();
   const menuPanelRef = useRef<HTMLDivElement>(null);
   const isActive = player.activeId === artist.id;
   const isPlaying = isActive && player.isPlaying;
@@ -394,7 +397,7 @@ function ArtistTile({
           onClick={onTogglePlay}
           disabled={!hasExcerpt}
           aria-label={playLabel}
-          title={hasExcerpt ? undefined : "Extrait à venir"}
+          title={hasExcerpt ? undefined : t("player.excerptSoon")}
         >
           {isLoading ? (
             <Loader2 className="artist-tile__spinner" size={18} aria-hidden="true" />
@@ -426,7 +429,7 @@ function ArtistTile({
             aria-expanded={menuOpen}
             aria-haspopup="menu"
           >
-            Écouter
+            {t("artists.listen")}
           </button>
         </div>
 
@@ -435,7 +438,7 @@ function ArtistTile({
         )}
         {hasError && (
           <p className="artist-tile__status artist-tile__status--error">
-            Lecture impossible pour le moment
+            {t("player.error")}
           </p>
         )}
 
@@ -456,7 +459,7 @@ function ArtistTile({
           <div className="artist-tile__menu" role="menu" ref={menuPanelRef}>
             {artist.platforms.length === 0 ? (
               <p className="artist-tile__menu-empty">
-                Aucune plateforme renseignée pour le moment.
+                {t("artists.noPlatforms")}
               </p>
             ) : (
               <ul role="list">

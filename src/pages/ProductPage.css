@@ -78,6 +78,7 @@
 }
 
 .product__name {
+  min-width: 0;
   font-size: var(--display-md);
   font-weight: 900;
   font-stretch: 116%;

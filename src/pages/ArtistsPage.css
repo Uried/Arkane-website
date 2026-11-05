@@ -35,7 +35,8 @@
 }
 
 .artists-hero__title {
-  font-size: clamp(3.75rem, 14.5vw, 12.5rem);
+  /* 8 chars at wdth ~118% — cqw-sized to always fit the hero container. */
+  font-size: clamp(3.75rem, 13cqw, 12.5rem);
   font-weight: 900;
   font-stretch: 118%;
   text-transform: uppercase;
@@ -46,6 +47,7 @@
 .artists-hero__title-mask {
   display: block;
   overflow: hidden;
+  white-space: nowrap;
 }
 
 .artists-hero__char {
@@ -371,7 +373,7 @@
   }
 
   .artists-hero__title {
-    font-size: clamp(3rem, 17vw, 6.5rem);
+    font-size: clamp(3rem, 13cqw, 6.5rem);
   }
 
   .artists__grid {

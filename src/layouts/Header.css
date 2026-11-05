@@ -71,6 +71,43 @@
   transform: scaleX(1);
 }
 
+/* Header actions cluster: language toggle + cart + menu. */
+.site-header__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.site-header__lang {
+  display: inline-flex;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+}
+
+.site-header__lang-btn {
+  padding: 0.3rem 0.55rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-text-faint);
+  transition:
+    background-color var(--duration-fast) var(--ease),
+    color var(--duration-fast) var(--ease);
+}
+
+.site-header__lang-btn + .site-header__lang-btn {
+  border-left: 1px solid var(--color-line);
+}
+
+.site-header__lang-btn:hover {
+  color: var(--color-text);
+}
+
+.site-header__lang-btn[aria-pressed="true"] {
+  background: var(--color-accent);
+  color: var(--color-text);
+}
+
 /* Cart trigger — always visible, badge shows item count. */
 .site-header__cart-btn {
   position: relative;

@@ -137,6 +137,82 @@
   }
 }
 
+/* ---- Rules — each sits on its source wire, right after the glyph ---- */
+
+.universe__rules {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+}
+
+.universe__rule {
+  position: absolute;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding: var(--space-1) var(--space-2);
+  /* Dark chip — reads as a label soldered onto the wire. */
+  background: var(--color-bg);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.universe__rule-index {
+  flex-shrink: 0;
+  color: var(--color-accent-strong);
+}
+
+/* ---- Mobile — paired icon + rule rows below the composition ---- */
+
+.universe__pairs {
+  display: none;
+  padding: var(--space-6) var(--gutter);
+  list-style: none;
+}
+
+.universe__pair {
+  display: grid;
+  grid-template-columns: 3rem 2.25rem minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-3);
+  padding-block: var(--space-4);
+  border-top: 1px solid var(--color-line);
+}
+
+.universe__pair-glyph {
+  width: 3rem;
+  height: 3rem;
+  fill: none;
+  stroke: var(--color-text);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+}
+
+.universe__pair-index {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-accent-strong);
+}
+
+.universe__pair-text {
+  min-width: 0;
+  overflow-wrap: break-word;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.72);
+}
+
 /* ---- Responsive ---- */
 
 @media (max-width: 48rem) {
@@ -145,6 +221,14 @@
   }
 
   .universe__svg--v {
+    display: block;
+  }
+
+  .universe__rules {
+    display: none;
+  }
+
+  .universe__pairs {
     display: block;
   }
 

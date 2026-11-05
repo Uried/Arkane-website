@@ -76,6 +76,11 @@ p {
   text-wrap: pretty;
 }
 
+/* No oversized element may ever push the page horizontally. */
+body {
+  overflow-x: clip;
+}
+
 h1,
 h2,
 h3,
@@ -86,6 +91,9 @@ h6 {
   line-height: 1.05;
   letter-spacing: var(--tracking-tight);
   text-wrap: balance;
+  /* Safety net: a heading word longer than its container wraps instead of
+   * overflowing — it never breaks mid-word when space allows. */
+  overflow-wrap: break-word;
 }
 
 ul[role="list"],

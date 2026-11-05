@@ -4,6 +4,7 @@ import {
   loadSpotifyApi,
   type SpotifyEmbedController,
 } from "../lib/spotify-embed";
+import { useI18n } from "../lib/i18n-store";
 
 /* Registry across all players — one excerpt playing at a time. */
 const controllers = new Map<string, SpotifyEmbedController>();
@@ -40,6 +41,7 @@ export default function ReleasePlayer({
   spotifyUri,
   listenUrl,
 }: ReleasePlayerProps) {
+  const { t } = useI18n();
   const embedRef = useRef<HTMLDivElement>(null);
   const controllerRef = useRef<SpotifyEmbedController | null>(null);
   const [phase, setPhase] = useState<"idle" | "loading" | "ready" | "error">(
@@ -112,7 +114,7 @@ export default function ReleasePlayer({
           onClick={toggle}
           disabled={!hasSource}
           aria-label={toggleLabel}
-          title={hasSource ? undefined : "Extrait à venir"}
+          title={hasSource ? undefined : t("player.excerptSoon")}
         >
           {phase === "loading" ? (
             <Loader2
@@ -145,7 +147,7 @@ export default function ReleasePlayer({
           )}
           {phase === "error" && (
             <span className="release-player__status release-player__status--error">
-              Lecture impossible
+              {t("player.error")}
             </span>
           )}
           {!hasSource && phase !== "error" && (
@@ -159,9 +161,9 @@ export default function ReleasePlayer({
             href={listenUrl}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label={`Ouvrir ${title} sur les plateformes d'écoute`}
+            aria-label={`${t("player.open")} ${title}`}
           >
-            Ouvrir
+            {t("player.open")}
             <ExternalLink size={11} aria-hidden="true" />
           </a>
         )}

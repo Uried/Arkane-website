@@ -3,7 +3,6 @@ import { Search } from "lucide-react";
 import {
   getNews,
   news,
-  newsKindLabels,
   newsKindOrder,
   sortedNews,
   type NewsKind,
@@ -11,6 +10,8 @@ import {
 import { siteConfig } from "../data/site";
 import { gsap, ScrollTrigger, useGSAP } from "../lib/gsap";
 import "./EditorialPage.css";
+import type { DictKey } from "../i18n/dict";
+import { useI18n } from "../lib/i18n-store";
 
 function normalize(value: string) {
   return value
@@ -31,6 +32,7 @@ function formatDate(iso?: string) {
 type KindFilter = NewsKind | "all";
 
 export default function EditorialPage() {
+  const { t } = useI18n();
   const scope = useRef<HTMLDivElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
   const [kind, setKind] = useState<KindFilter>("all");
@@ -54,14 +56,14 @@ export default function EditorialPage() {
 
   /* Page-level SEO — static meta in index.html stays the site default. */
   useEffect(() => {
-    document.title = `Actualités — ${siteConfig.name}`;
+    document.title = `${t("page.news")} — ${siteConfig.name}`;
     document
       .querySelector('meta[name="description"]')
       ?.setAttribute(
         "content",
         `${siteConfig.name} — actualités du label, des artistes et des sorties.`,
       );
-  }, []);
+  }, [t]);
 
   useGSAP(
     () => {
@@ -150,7 +152,7 @@ export default function EditorialPage() {
 
           <h1 id="news-title" className="news-hero__title">
             <span className="news-hero__title-mask" aria-hidden="true">
-              {"Actualités".split("").map((char, i) => (
+              {t("page.news").split("").map((char, i) => (
                 <span key={i} className="news-hero__char">
                   {char}
                 </span>
@@ -161,7 +163,7 @@ export default function EditorialPage() {
 
           <div className="news-hero__meta">
             <span className="news-hero__rule" aria-hidden="true" />
-            <span className="label">Journal</span>
+            <span className="label">{t("news.journal")}</span>
             <span className="label news-hero__count">
               {String(news.length).padStart(2, "0")}
             </span>
@@ -170,14 +172,14 @@ export default function EditorialPage() {
       </section>
 
       {/* ---------------------------------------------------------- Index */}
-      <section className="news" aria-label="Index des actualités">
+      <section className="news" aria-label={t("news.index")}>
         <div className="news__inner container">
           {news.length > 0 && (
             <div className="news__toolbar">
               <div
                 className="news-filter"
                 role="group"
-                aria-label="Filtrer par type de publication"
+                aria-label={t("news.filter")}
               >
                 <button
                   type="button"
@@ -185,7 +187,7 @@ export default function EditorialPage() {
                   aria-pressed={kind === "all"}
                   onClick={() => setKind("all")}
                 >
-                  Tout
+                  {t("action.all")}
                 </button>
                 {newsKindOrder
                   .filter((k) => availableKinds.has(k))
@@ -197,7 +199,7 @@ export default function EditorialPage() {
                       aria-pressed={kind === k}
                       onClick={() => setKind(k)}
                     >
-                      {newsKindLabels[k]}
+                      {t(`kind.${k}` as DictKey)}
                     </button>
                   ))}
               </div>
@@ -205,12 +207,12 @@ export default function EditorialPage() {
               <label className="news-search">
                 <Search size={14} aria-hidden="true" />
                 <span className="visually-hidden">
-                  Rechercher une actualité
+                  {t("news.search")}
                 </span>
                 <input
                   className="news-search__input"
                   type="search"
-                  placeholder="Rechercher"
+                  placeholder={t("action.search")}
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                 />
@@ -221,8 +223,8 @@ export default function EditorialPage() {
           {filtered.length === 0 ? (
             <p className="label news__empty">
               {news.length === 0
-                ? "Aucune actualité publiée pour le moment."
-                : "Aucune actualité ne correspond à cette recherche."}
+                ? t("news.empty")
+                : t("news.emptySearch")}
             </p>
           ) : (
             <ol className="news-list" role="list">
@@ -239,11 +241,13 @@ export default function EditorialPage() {
                     <span className="news-item__index" aria-hidden="true">
                       {String(i + 1).padStart(2, "0")}
                     </span>
-                    <span className="news-item__date">
-                      {formatDate(entry.publishedAt) ?? "—"}
-                    </span>
+                    {formatDate(entry.publishedAt) && (
+                      <span className="news-item__date">
+                        {formatDate(entry.publishedAt)}
+                      </span>
+                    )}
                     <span className="news-item__kind">
-                      {newsKindLabels[entry.kind]}
+                      {t(`kind.${entry.kind}` as DictKey)}
                     </span>
                     <span className="news-item__title">{entry.title}</span>
                     {entry.coverUrl && (

@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import {
-  categoryLabels,
   categoryOrder,
   formatPrice,
   products,
@@ -9,10 +8,13 @@ import {
 import { siteConfig } from "../data/site";
 import { gsap, ScrollTrigger, useGSAP } from "../lib/gsap";
 import "./ShopPage.css";
+import type { DictKey } from "../i18n/dict";
+import { useI18n } from "../lib/i18n-store";
 
 type CategoryFilter = ProductCategory | "all";
 
 export default function ShopPage() {
+  const { t } = useI18n();
   const scope = useRef<HTMLDivElement>(null);
   const [category, setCategory] = useState<CategoryFilter>("all");
 
@@ -24,14 +26,14 @@ export default function ShopPage() {
   );
 
   useEffect(() => {
-    document.title = `Boutique — ${siteConfig.name}`;
+    document.title = `${t("page.shop")} — ${siteConfig.name}`;
     document
       .querySelector('meta[name="description"]')
       ?.setAttribute(
         "content",
         `${siteConfig.name} — boutique officielle : vêtements, accessoires, éditions limitées.`,
       );
-  }, []);
+  }, [t]);
 
   useGSAP(
     () => {
@@ -90,7 +92,7 @@ export default function ShopPage() {
           </p>
           <h1 id="shop-title" className="shop-hero__title">
             <span className="shop-hero__title-mask" aria-hidden="true">
-              {"Boutique".split("").map((char, i) => (
+              {t("page.shop").split("").map((char, i) => (
                 <span key={i} className="shop-hero__char">
                   {char}
                 </span>
@@ -100,7 +102,7 @@ export default function ShopPage() {
           </h1>
           <div className="shop-hero__meta">
             <span className="shop-hero__rule" aria-hidden="true" />
-            <span className="label">Merch</span>
+            <span className="label">{t("shop.merch")}</span>
             <span className="label shop-hero__count">
               {String(products.length).padStart(2, "0")}
             </span>
@@ -114,7 +116,7 @@ export default function ShopPage() {
             <div
               className="shop-filter"
               role="group"
-              aria-label="Filtrer par catégorie"
+              aria-label={t("shop.filter")}
             >
               <button
                 type="button"
@@ -122,7 +124,7 @@ export default function ShopPage() {
                 aria-pressed={category === "all"}
                 onClick={() => setCategory("all")}
               >
-                Tout
+                {t("action.all")}
               </button>
               {categoryOrder
                 .filter((c) => available.has(c))
@@ -134,7 +136,7 @@ export default function ShopPage() {
                     aria-pressed={category === c}
                     onClick={() => setCategory(c)}
                   >
-                    {categoryLabels[c]}
+                    {t(`cat.${c}` as DictKey)}
                   </button>
                 ))}
             </div>
@@ -144,8 +146,8 @@ export default function ShopPage() {
             <div className="shop__empty">
               <p className="label shop__empty-note">
                 {products.length === 0
-                  ? "La boutique ouvre bientôt — aucun produit n'est encore en ligne."
-                  : "Aucun produit dans cette catégorie."}
+                  ? t("shop.empty")
+                  : t("shop.emptyCat")}
               </p>
             </div>
           ) : (
@@ -174,11 +176,11 @@ export default function ShopPage() {
                         />
                       )}
                       {product.inStock === false && (
-                        <span className="shop-tile__flag">Épuisé</span>
+                        <span className="shop-tile__flag">{t("shop.soldOut")}</span>
                       )}
                       {product.limited && (
                         <span className="shop-tile__flag shop-tile__flag--accent">
-                          Limité
+                          {t("shop.limited")}
                         </span>
                       )}
                     </span>

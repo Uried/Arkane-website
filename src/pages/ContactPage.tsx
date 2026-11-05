@@ -13,10 +13,13 @@ import {
 import { siteConfig } from "../data/site";
 import { gsap, ScrollTrigger, useGSAP } from "../lib/gsap";
 import "./ContactPage.css";
+import type { DictKey } from "../i18n/dict";
+import { useI18n } from "../lib/i18n-store";
 
 const emptyValues = { name: "", email: "", subject: "", message: "" };
 
 export default function ContactPage() {
+  const { t } = useI18n();
   const scope = useRef<HTMLDivElement>(null);
   const mountedAt = useRef(0);
   const [kind, setKind] = useState<ContactKind>("general");
@@ -30,14 +33,14 @@ export default function ContactPage() {
 
   useEffect(() => {
     mountedAt.current = Date.now();
-    document.title = `Contact — ${siteConfig.name}`;
+    document.title = `${t("page.contact")} — ${siteConfig.name}`;
     document
       .querySelector('meta[name="description"]')
       ?.setAttribute(
         "content",
         `${siteConfig.name} — contact : propositions artistiques, partenariats, production, questions.`,
       );
-  }, []);
+  }, [t]);
 
   useGSAP(
     () => {
@@ -135,7 +138,7 @@ export default function ContactPage() {
           </p>
           <h1 id="contact-title" className="contact-hero__title">
             <span className="contact-hero__title-mask" aria-hidden="true">
-              {"Contact".split("").map((char, i) => (
+              {t("page.contact").split("").map((char, i) => (
                 <span key={i} className="contact-hero__char">
                   {char}
                 </span>
@@ -145,7 +148,7 @@ export default function ContactPage() {
           </h1>
           <div className="contact-hero__meta">
             <span className="contact-hero__rule" aria-hidden="true" />
-            <span className="label">Ouvrir un canal</span>
+            <span className="label">{t("contact.open")}</span>
           </div>
         </div>
       </section>
@@ -155,7 +158,7 @@ export default function ContactPage() {
         <div className="contact-kinds__inner container">
           <fieldset className="contact-kinds__fieldset">
             <legend id="kinds-heading" className="label contact-kinds__legend">
-              Nature de la demande
+              {t("contact.legend")}
             </legend>
             <div className="contact-kinds__list">
               {contactKinds.map((k, i) => (
@@ -174,7 +177,7 @@ export default function ContactPage() {
                   <span className="contact-kind__index" aria-hidden="true">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <span className="contact-kind__label">{k.label}</span>
+                  <span className="contact-kind__label">{t(`contact.kind.${k.id}` as DictKey)}</span>
                   <span className="contact-kind__mark" aria-hidden="true" />
                 </label>
               ))}
@@ -188,10 +191,10 @@ export default function ContactPage() {
         <div className="contact-form__inner container">
           <Reveal>
             <h2 id="form-heading" className="contact-form__heading">
-              Écris-nous
+              {t("contact.write")}
               {selectedKind && (
                 <span className="label contact-form__kind">
-                  — {selectedKind.label}
+                  — {t(`contact.kind.${kind}` as DictKey)}
                 </span>
               )}
             </h2>
@@ -214,7 +217,7 @@ export default function ContactPage() {
               <div className="contact-form__grid">
                 <div className="contact-field">
                   <label className="label" htmlFor="contact-name">
-                    Nom
+                    {t("contact.name")}
                   </label>
                   <input
                     id="contact-name"
@@ -234,14 +237,14 @@ export default function ContactPage() {
                       className="contact-field__error"
                       role="alert"
                     >
-                      {errors.name}
+                      {t(errors.name as DictKey)}
                     </p>
                   )}
                 </div>
 
                 <div className="contact-field">
                   <label className="label" htmlFor="contact-email">
-                    E-mail
+                    {t("contact.email")}
                   </label>
                   <input
                     id="contact-email"
@@ -262,7 +265,7 @@ export default function ContactPage() {
                       className="contact-field__error"
                       role="alert"
                     >
-                      {errors.email}
+                      {t(errors.email as DictKey)}
                     </p>
                   )}
                 </div>
@@ -270,7 +273,7 @@ export default function ContactPage() {
 
               <div className="contact-field">
                 <label className="label" htmlFor="contact-subject">
-                  Sujet
+                  {t("contact.subject")}
                 </label>
                 <input
                   id="contact-subject"
@@ -289,14 +292,14 @@ export default function ContactPage() {
                     className="contact-field__error"
                     role="alert"
                   >
-                    {errors.subject}
+                    {t(errors.subject as DictKey)}
                   </p>
                 )}
               </div>
 
               <div className="contact-field">
                 <label className="label" htmlFor="contact-message">
-                  Message
+                  {t("contact.message")}
                 </label>
                 <textarea
                   id="contact-message"
@@ -316,7 +319,7 @@ export default function ContactPage() {
                     className="contact-field__error"
                     role="alert"
                   >
-                    {errors.message}
+                    {t(errors.message as DictKey)}
                   </p>
                 )}
               </div>
@@ -336,17 +339,16 @@ export default function ContactPage() {
                   ) : (
                     <ArrowRight size={16} aria-hidden="true" />
                   )}
-                  Envoyer
+                  {t("action.send")}
                 </button>
                 {status === "unavailable" && (
                   <p className="contact-form__status" role="status">
-                    Le canal d'envoi sera bientôt disponible — ton message est
-                    prêt, réessaie plus tard.
+                    {t("contact.status.unavailable")}
                   </p>
                 )}
                 {status === "sent" && (
                   <p className="contact-form__status" role="status">
-                    Message envoyé.
+                    {t("contact.status.sent")}
                   </p>
                 )}
                 {status === "error" && (
@@ -354,7 +356,7 @@ export default function ContactPage() {
                     className="contact-form__status contact-form__status--error"
                     role="alert"
                   >
-                    Envoi impossible pour le moment — réessaie plus tard.
+                    {t("contact.status.error")}
                   </p>
                 )}
               </div>
@@ -364,11 +366,11 @@ export default function ContactPage() {
       </section>
 
       {/* --------------------------------------------------- Coordinates */}
-      <section className="contact-direct" aria-label="Coordonnées directes">
+      <section className="contact-direct" aria-label={t("contact.direct")}>
         <div className="contact-direct__inner container">
           <Reveal>
-            <p className="label contact-direct__label">Coordonnées directes</p>
-            <p className="contact-direct__note">À venir.</p>
+            <p className="label contact-direct__label">{t("contact.direct")}</p>
+            <p className="contact-direct__note">{t("contact.soon")}</p>
           </Reveal>
         </div>
       </section>

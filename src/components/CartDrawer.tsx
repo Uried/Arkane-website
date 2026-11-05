@@ -3,9 +3,11 @@ import { Minus, Plus, Trash2, X } from "lucide-react";
 import { formatPrice, getProduct } from "../data/products";
 import { cartKey, useCart } from "../lib/cart-store";
 import "./CartDrawer.css";
+import { useI18n } from "../lib/i18n-store";
 
 /** Sliding cart panel — quick adjustments, full recap lives on /shop/panier. */
 export default function CartDrawer() {
+  const { t } = useI18n();
   const { isOpen, setOpen, items, setQty, remove, count } = useCart();
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -35,13 +37,13 @@ export default function CartDrawer() {
       className={`cart-drawer${isOpen ? " is-open" : ""}`}
       role="dialog"
       aria-modal="true"
-      aria-label="Panier"
+      aria-label={t("cart.title")}
       aria-hidden={!isOpen}
     >
       <button
         type="button"
         className="cart-drawer__backdrop"
-        aria-label="Fermer le panier"
+        aria-label={t("action.close")}
         onClick={() => setOpen(false)}
         tabIndex={isOpen ? 0 : -1}
       />
@@ -51,7 +53,7 @@ export default function CartDrawer() {
           <button
             type="button"
             className="cart-drawer__close"
-            aria-label="Fermer"
+            aria-label={t("action.close")}
             onClick={() => setOpen(false)}
           >
             <X size={18} />
@@ -59,7 +61,7 @@ export default function CartDrawer() {
         </div>
 
         {lines.length === 0 ? (
-          <p className="label cart-drawer__empty">Ton panier est vide.</p>
+          <p className="label cart-drawer__empty">{t("cart.empty")}</p>
         ) : (
           <>
             <ul className="cart-drawer__list" role="list">
@@ -90,7 +92,7 @@ export default function CartDrawer() {
                     <div className="cart-drawer__qty">
                       <button
                         type="button"
-                        aria-label="Réduire la quantité"
+                        aria-label={t("cart.decrease")}
                         onClick={() => setQty(item, item.qty - 1)}
                         tabIndex={isOpen ? 0 : -1}
                       >
@@ -99,7 +101,7 @@ export default function CartDrawer() {
                       <span>{item.qty}</span>
                       <button
                         type="button"
-                        aria-label="Augmenter la quantité"
+                        aria-label={t("cart.increase")}
                         onClick={() => setQty(item, item.qty + 1)}
                         tabIndex={isOpen ? 0 : -1}
                       >
@@ -109,7 +111,7 @@ export default function CartDrawer() {
                     <button
                       type="button"
                       className="cart-drawer__remove"
-                      aria-label={`Retirer ${product.name}`}
+                      aria-label={`${t("cart.remove")} ${product.name}`}
                       onClick={() => remove(item)}
                       tabIndex={isOpen ? 0 : -1}
                     >
@@ -121,7 +123,7 @@ export default function CartDrawer() {
             </ul>
             <div className="cart-drawer__foot">
               <p className="cart-drawer__total">
-                <span className="label">Sous-total</span>
+                <span className="label">{t("cart.subtotal")}</span>
                 <strong>{formatPrice(subtotal)}</strong>
               </p>
               <a

@@ -4,17 +4,19 @@ import { formatPrice, getProduct } from "../data/products";
 import { siteConfig } from "../data/site";
 import { cartKey, useCart } from "../lib/cart-store";
 import "./CartPage.css";
+import { useI18n } from "../lib/i18n-store";
 
 export default function CartPage() {
+  const { t } = useI18n();
   const { items, setQty, remove, count } = useCart();
   const [status, setStatus] = useState<"idle" | "unavailable">("idle");
 
   useEffect(() => {
-    document.title = `Panier — ${siteConfig.name}`;
+    document.title = `${t("cart.title")} — ${siteConfig.name}`;
     document
       .querySelector('meta[name="description"]')
       ?.setAttribute("content", `${siteConfig.name} — panier.`);
-  }, []);
+  }, [t]);
 
   const lines = items
     .map((item) => ({ item, product: getProduct(item.productId) }))
@@ -37,12 +39,12 @@ export default function CartPage() {
       <section className="cart__inner container">
         <a className="label cart__back" href="/shop">
           <ArrowLeft size={14} aria-hidden="true" />
-          Boutique
+          {t("shop.back")}
         </a>
-        <h1 className="cart__title">Panier</h1>
+        <h1 className="cart__title">{t("cart.title")}</h1>
 
         {lines.length === 0 ? (
-          <p className="label cart__empty">Ton panier est vide.</p>
+          <p className="label cart__empty">{t("cart.empty")}</p>
         ) : (
           <div className="cart__layout">
             <ul className="cart__list" role="list">
@@ -73,7 +75,7 @@ export default function CartPage() {
                     <div className="cart-line__qty">
                       <button
                         type="button"
-                        aria-label={`Réduire la quantité de ${product.name}`}
+                        aria-label={`${t("cart.decrease")} — ${product.name}`}
                         onClick={() => setQty(item, item.qty - 1)}
                       >
                         <Minus size={14} />
@@ -81,7 +83,7 @@ export default function CartPage() {
                       <span aria-live="polite">{item.qty}</span>
                       <button
                         type="button"
-                        aria-label={`Augmenter la quantité de ${product.name}`}
+                        aria-label={`${t("cart.increase")} — ${product.name}`}
                         onClick={() => setQty(item, item.qty + 1)}
                       >
                         <Plus size={14} />
@@ -90,7 +92,7 @@ export default function CartPage() {
                     <button
                       type="button"
                       className="cart-line__remove"
-                      aria-label={`Retirer ${product.name} du panier`}
+                      aria-label={`${t("cart.remove")} ${product.name}`}
                       onClick={() => remove(item)}
                     >
                       <Trash2 size={15} />
@@ -102,7 +104,7 @@ export default function CartPage() {
 
             <form className="cart__order" onSubmit={onSubmit}>
               <p className="cart__total">
-                <span className="label">Sous-total ({count})</span>
+                <span className="label">{t("cart.subtotal")} ({count})</span>
                 <strong>{formatPrice(subtotal)}</strong>
               </p>
               <p className="label cart__note">
@@ -110,7 +112,7 @@ export default function CartPage() {
                 boutique.
               </p>
               <button type="submit" className="btn btn--solid cart__submit">
-                Commander
+                {t("action.order")}
               </button>
               {status === "unavailable" && (
                 <p className="cart__status" role="status">

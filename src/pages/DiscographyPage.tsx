@@ -11,12 +11,9 @@ import { siteConfig } from "../data/site";
 import { gsap, ScrollTrigger, useGSAP } from "../lib/gsap";
 import type { ReleaseKind } from "../types";
 import "./DiscographyPage.css";
+import type { DictKey } from "../i18n/dict";
+import { useI18n } from "../lib/i18n-store";
 
-const kindLabels: Record<ReleaseKind, string> = {
-  album: "Album",
-  ep: "EP",
-  single: "Single",
-};
 
 const kindOrder: ReleaseKind[] = ["album", "ep", "single"];
 
@@ -30,6 +27,7 @@ function normalize(value: string) {
 type KindFilter = ReleaseKind | "all";
 
 export default function DiscographyPage() {
+  const { t } = useI18n();
   const scope = useRef<HTMLDivElement>(null);
   const [kind, setKind] = useState<KindFilter>("all");
   const [query, setQuery] = useState("");
@@ -59,14 +57,14 @@ export default function DiscographyPage() {
 
   /* Page-level SEO — static meta in index.html stays the site default. */
   useEffect(() => {
-    document.title = `Discographie — ${siteConfig.name}`;
+    document.title = `${t("page.releases")} — ${siteConfig.name}`;
     document
       .querySelector('meta[name="description"]')
       ?.setAttribute(
         "content",
         `${siteConfig.name} — discographie : ${releases.map((r) => r.title).join(", ")}.`,
       );
-  }, []);
+  }, [t]);
 
   useGSAP(
     () => {
@@ -132,7 +130,7 @@ export default function DiscographyPage() {
 
           <h1 id="discography-title" className="disc-hero__title">
             <span className="disc-hero__title-mask" aria-hidden="true">
-              {"Discographie".split("").map((char, i) => (
+              {t("page.releases").split("").map((char, i) => (
                 <span key={i} className="disc-hero__char">
                   {char}
                 </span>
@@ -143,7 +141,7 @@ export default function DiscographyPage() {
 
           <div className="disc-hero__meta">
             <span className="disc-hero__rule" aria-hidden="true" />
-            <span className="label">Catalogue</span>
+            <span className="label">{t("releases.catalog")}</span>
             <span className="label disc-hero__count">
               {String(releases.length).padStart(2, "0")}
             </span>
@@ -152,17 +150,17 @@ export default function DiscographyPage() {
       </section>
 
       {/* ----------------------------------------------------------- List */}
-      <section className="disc" aria-label="Catalogue des sorties">
+      <section className="disc" aria-label={t("releases.catalog")}>
         <div className="disc__inner container">
           <div className="disc__toolbar">
-            <div className="disc-filter" role="group" aria-label="Filtrer par type de sortie">
+            <div className="disc-filter" role="group" aria-label={t("releases.filter")}>
               <button
                 type="button"
                 className="disc-filter__btn"
                 aria-pressed={kind === "all"}
                 onClick={() => setKind("all")}
               >
-                Tout
+                {t("action.all")}
               </button>
               {kindOrder
                 .filter((k) => availableKinds.has(k))
@@ -174,18 +172,18 @@ export default function DiscographyPage() {
                     aria-pressed={kind === k}
                     onClick={() => setKind(k)}
                   >
-                    {kindLabels[k]}
+                    {t(`kind.${k}` as DictKey)}
                   </button>
                 ))}
             </div>
 
             <label className="disc-search">
               <Search size={14} aria-hidden="true" />
-              <span className="visually-hidden">Rechercher une sortie</span>
+              <span className="visually-hidden">{t("releases.search")}</span>
               <input
                 className="disc-search__input"
                 type="search"
-                placeholder="Rechercher"
+                placeholder={t("action.search")}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
               />
@@ -203,7 +201,7 @@ export default function DiscographyPage() {
                   key={group.year ?? "undated"}
                   className="disc-year"
                   aria-label={
-                    group.year ? `Sorties ${group.year}` : "Sorties"
+                    group.year ? `${t("releases.yearLabel")} ${group.year}` : t("releases.yearLabel")
                   }
                 >
                   {group.year && (
@@ -248,6 +246,7 @@ interface DiscItemProps {
 }
 
 function DiscItem({ release, index, open, onToggle }: DiscItemProps) {
+  const { t } = useI18n();
   return (
     <li className={`disc-item${open ? " is-open" : ""}`}>
       <button
@@ -270,7 +269,7 @@ function DiscItem({ release, index, open, onToggle }: DiscItemProps) {
         {release.artistName && (
           <span className="disc-item__artist">{release.artistName}</span>
         )}
-        <span className="disc-item__kind">{kindLabels[release.kind]}</span>
+        <span className="disc-item__kind">{t(`kind.${release.kind}` as DictKey)}</span>
         <ChevronDown
           className="disc-item__chevron"
           size={16}

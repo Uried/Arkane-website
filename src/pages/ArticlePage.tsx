@@ -2,10 +2,12 @@ import { useEffect, type CSSProperties } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Reveal from "../components/Reveal";
 import { artists } from "../data/artists";
-import { getNews, newsKindLabels, sortedNews, type NewsEntry } from "../data/news";
+import { getNews, sortedNews, type NewsEntry } from "../data/news";
 import { getRelease } from "../data/releases";
 import { siteConfig } from "../data/site";
 import "./ArticlePage.css";
+import type { DictKey } from "../i18n/dict";
+import { useI18n } from "../lib/i18n-store";
 
 function formatDate(iso?: string) {
   if (!iso) return null;
@@ -16,10 +18,10 @@ function formatDate(iso?: string) {
   });
 }
 
-function applyArticleMeta(article: NewsEntry | undefined) {
+function applyArticleMeta(article: NewsEntry | undefined, missing: string) {
   document.title = article
     ? `${article.title} — ${siteConfig.name}`
-    : `Actualité introuvable — ${siteConfig.name}`;
+    : `${missing} ${siteConfig.name}`;
   document
     .querySelector('meta[name="description"]')
     ?.setAttribute(
@@ -33,6 +35,7 @@ interface ArticlePageProps {
 }
 
 export default function ArticlePage({ slug }: ArticlePageProps) {
+  const { t } = useI18n();
   const article = getNews(slug);
 
   const sorted = sortedNews();
@@ -51,8 +54,8 @@ export default function ArticlePage({ slug }: ArticlePageProps) {
       .filter((r): r is NonNullable<typeof r> => Boolean(r)) ?? [];
 
   useEffect(() => {
-    applyArticleMeta(article);
-  }, [article]);
+    applyArticleMeta(article, t("news.missing"));
+  }, [article, t]);
 
   if (!article) {
     return (
@@ -60,11 +63,11 @@ export default function ArticlePage({ slug }: ArticlePageProps) {
         <div className="article__inner container">
           <a className="label article__back" href="/editorial">
             <ArrowLeft size={14} aria-hidden="true" />
-            Actualités
+            {t("news.back")}
           </a>
           <h1 className="article__title">Actualité introuvable.</h1>
           <p className="label article__missing-note">
-            Cette publication n'existe pas ou a été déplacée.
+            {t("news.missingNote")}
           </p>
         </div>
       </section>
@@ -78,14 +81,14 @@ export default function ArticlePage({ slug }: ArticlePageProps) {
       <div className="article__inner container">
         <a className="label article__back" href="/editorial">
           <ArrowLeft size={14} aria-hidden="true" />
-          Actualités
+          {t("news.back")}
         </a>
 
         <header className="article__header">
           <Reveal>
             <div className="article__meta">
               <span className="article__kind">
-                {newsKindLabels[article.kind]}
+                {t(`kind.${article.kind}` as DictKey)}
               </span>
               {date && <span className="article__date label">{date}</span>}
             </div>
@@ -154,10 +157,10 @@ export default function ArticlePage({ slug }: ArticlePageProps) {
         )}
 
         {(prev || next) && (
-          <nav className="article__nav" aria-label="Actualités voisines">
+          <nav className="article__nav" aria-label={t("news.adjacent")}>
             {prev ? (
               <a className="article__nav-link" href={`/editorial/${prev.slug}`}>
-                <span className="label">Précédent</span>
+                <span className="label">{t("action.prev")}</span>
                 <span className="article__nav-title">{prev.title}</span>
               </a>
             ) : (
@@ -168,7 +171,7 @@ export default function ArticlePage({ slug }: ArticlePageProps) {
                 className="article__nav-link article__nav-link--next"
                 href={`/editorial/${next.slug}`}
               >
-                <span className="label">Suivant</span>
+                <span className="label">{t("action.next")}</span>
                 <span className="article__nav-title">{next.title}</span>
               </a>
             )}

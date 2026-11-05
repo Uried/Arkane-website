@@ -1,16 +1,19 @@
 import { useEffect, useState, type CSSProperties } from "react";
 import { ArrowLeft, ShoppingBag } from "lucide-react";
 import Reveal from "../components/Reveal";
-import { categoryLabels, formatPrice, getProduct } from "../data/products";
+import { formatPrice, getProduct } from "../data/products";
 import { siteConfig } from "../data/site";
 import { useCart } from "../lib/cart-store";
 import "./ProductPage.css";
+import type { DictKey } from "../i18n/dict";
+import { useI18n } from "../lib/i18n-store";
 
 interface ProductPageProps {
   slug: string;
 }
 
 export default function ProductPage({ slug }: ProductPageProps) {
+  const { t } = useI18n();
   const product = getProduct(slug);
   const { add, setOpen } = useCart();
   const [variantId, setVariantId] = useState<string | undefined>(
@@ -20,7 +23,7 @@ export default function ProductPage({ slug }: ProductPageProps) {
   useEffect(() => {
     document.title = product
       ? `${product.name} — ${siteConfig.name}`
-      : `Produit introuvable — ${siteConfig.name}`;
+      : `${t("shop.missing")} ${siteConfig.name}`;
     document
       .querySelector('meta[name="description"]')
       ?.setAttribute(
@@ -28,7 +31,7 @@ export default function ProductPage({ slug }: ProductPageProps) {
         product?.description ??
           `${siteConfig.name} — boutique officielle.`,
       );
-  }, [product]);
+  }, [product, t]);
 
   if (!product) {
     return (
@@ -36,11 +39,11 @@ export default function ProductPage({ slug }: ProductPageProps) {
         <div className="product__inner container">
           <a className="label product__back" href="/shop">
             <ArrowLeft size={14} aria-hidden="true" />
-            Boutique
+            {t("shop.back")}
           </a>
           <h1 className="product__name">Produit introuvable.</h1>
           <p className="label product__missing-note">
-            Ce produit n'existe pas ou a été retiré.
+            {t("shop.missingNote")}
           </p>
         </div>
       </section>
@@ -55,7 +58,7 @@ export default function ProductPage({ slug }: ProductPageProps) {
       <div className="product__inner container">
         <a className="label product__back" href="/shop">
           <ArrowLeft size={14} aria-hidden="true" />
-          Boutique
+          {t("shop.back")}
         </a>
 
         <div className="product__layout">
@@ -81,7 +84,7 @@ export default function ProductPage({ slug }: ProductPageProps) {
               <div className="product__tags">
                 {product.category && (
                   <span className="product__tag">
-                    {categoryLabels[product.category]}
+                    {t(`cat.${product.category}` as DictKey)}
                   </span>
                 )}
                 {product.limited && (
@@ -103,7 +106,7 @@ export default function ProductPage({ slug }: ProductPageProps) {
             {product.variants && product.variants.length > 0 && (
               <Reveal delay={180}>
                 <fieldset className="product__variants">
-                  <legend className="label">Option</legend>
+                  <legend className="label">{t("shop.option")}</legend>
                   <div className="product__variant-list">
                     {product.variants.map((variant) => (
                       <button
@@ -133,11 +136,11 @@ export default function ProductPage({ slug }: ProductPageProps) {
                   }}
                 >
                   <ShoppingBag size={15} aria-hidden="true" />
-                  Ajouter au panier
+                  {t("shop.add")}
                 </button>
                 {!purchasable && (
                   <p className="product__stock-note label">
-                    {soldOut ? "Épuisé" : "Bientôt disponible"}
+                    {soldOut ? t("shop.soldOut") : t("shop.soon")}
                   </p>
                 )}
               </div>

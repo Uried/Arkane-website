@@ -73,10 +73,14 @@
   grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
   align-items: end;
   gap: var(--space-6);
+  /* Container query: the title is sized against the real grid width. */
+  container-type: inline-size;
 }
 
 .hero__title {
-  font-size: clamp(3.5rem, 11vw, 12rem);
+  /* ARKANE ≈ 5.2em at wdth 120% — 12cqw keeps it inside the 8fr column
+   * (2/3 of the grid) at every viewport; nowrap = never splits. */
+  font-size: clamp(3.5rem, 12cqw, 11rem);
   font-weight: 900;
   font-stretch: 120%;
   text-transform: uppercase;
@@ -87,6 +91,7 @@
 .hero__title-mask {
   display: block;
   overflow: hidden;
+  white-space: nowrap;
 }
 
 .hero__title-char {
@@ -98,7 +103,9 @@
   display: block;
   margin-top: var(--space-3);
   font-size: 0.42em;
-  letter-spacing: 0.32em;
+  /* Fluid tracking — PRODUCTION stays on one line at every viewport. */
+  letter-spacing: clamp(0.14em, 1.6cqw, 0.32em);
+  white-space: nowrap;
   color: transparent;
   -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.85);
   animation: hero-fade 1s var(--ease) 0.55s both;
@@ -428,6 +435,8 @@
 }
 
 .release-card__title {
+  min-width: 0;
+  overflow-wrap: break-word;
   font-size: var(--text-lg);
   font-weight: 700;
   letter-spacing: var(--tracking-tight);
@@ -449,91 +458,6 @@
 .release-card:focus-visible .release-card__arrow {
   opacity: 1;
   transform: none;
-}
-
-/* -------------------------------------------------------------- Rules ---- */
-
-.rules {
-  border-top: 1px solid var(--color-line);
-}
-
-.rules__inner {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-7);
-  padding-block: var(--space-9);
-}
-
-.rules__label {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-3);
-  font-weight: 400;
-  line-height: 1.6;
-}
-
-.rules__label::before {
-  content: "";
-  width: 0.6em;
-  height: 0.6em;
-  background: var(--color-accent);
-}
-
-.rules__list {
-  padding: 0;
-  list-style: none;
-  border-bottom: 1px solid var(--color-line);
-}
-
-.rules__item {
-  border-top: 1px solid var(--color-line);
-}
-
-.rules__row {
-  display: grid;
-  grid-template-columns: 4rem minmax(0, 1fr);
-  align-items: baseline;
-  gap: var(--space-5);
-  padding-block: var(--space-6);
-}
-
-.rules__index {
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  letter-spacing: var(--tracking-wider);
-  color: var(--color-text-faint);
-}
-
-.rules__text {
-  max-width: 22ch;
-  font-size: clamp(1.75rem, 4.4vw, 4.25rem);
-  font-weight: 800;
-  font-stretch: 112%;
-  line-height: 1.02;
-  letter-spacing: -0.03em;
-  text-wrap: balance;
-  will-change: transform, opacity;
-}
-
-/* The last rule closes the list: full white, accent index. */
-.rules__item:not(:last-child) .rules__text {
-  color: rgba(255, 255, 255, 0.78);
-}
-
-.rules__item:last-child .rules__index {
-  color: var(--color-accent-strong);
-}
-
-@media (max-width: 40rem) {
-  .rules__inner {
-    padding-block: var(--space-7);
-  }
-
-  .rules__row {
-    grid-template-columns: 1fr;
-    gap: var(--space-2);
-    padding-block: var(--space-5);
-  }
 }
 
 /* -------------------------------------------------------------- Outro ---- */
@@ -570,15 +494,17 @@
     gap: var(--space-5);
   }
 
+  /* Single column — the title can fill the whole grid width. */
+  .hero__title {
+    font-size: clamp(3rem, 17cqw, 11rem);
+  }
+
   .hero__side {
     padding-bottom: 0;
   }
 }
 
 @media (max-width: 40rem) {
-  .hero__title {
-    font-size: clamp(3rem, 14.5vw, 6rem);
-  }
 
   .hero__title-line {
     letter-spacing: 0.24em;

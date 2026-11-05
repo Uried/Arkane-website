@@ -1,42 +1,21 @@
 import { ArrowRight } from "lucide-react";
 import { useRef, type CSSProperties } from "react";
+import ArkaneHero from "../components/ArkaneHero";
 import ArkaneUniverse from "../components/ArkaneUniverse";
+import HomeNews from "../components/HomeNews";
 import ReleasePlayer from "../components/ReleasePlayer";
 import Reveal from "../components/Reveal";
-import { homeContent } from "../data/site";
+import { homeContentByLang } from "../data/site";
+import { sortedNews } from "../data/news";
+import { useI18n } from "../lib/i18n-store";
 import { gsap, ScrollTrigger, useGSAP } from "../lib/gsap";
 import "./HomePage.css";
 
-const { hero, universe, rules, interlude, releases, outro } = homeContent;
-
-/** Giant wordmark — letters rise in on load, clipped by an overflow mask. */
-function HeroTitle() {
-  return (
-    <h1
-      id="hero-title"
-      className="hero__title"
-      aria-label={`${hero.title} ${hero.subline}`}
-    >
-      <span className="hero__title-mask" aria-hidden="true">
-        {hero.title.split("").map((char, i) => (
-          <span
-            key={i}
-            className="hero__title-char"
-            style={{ animationDelay: `${0.1 + i * 0.055}s` }}
-          >
-            {char}
-          </span>
-        ))}
-      </span>
-      <span className="hero__title-line" aria-hidden="true">
-        {hero.subline}
-      </span>
-    </h1>
-  );
-}
-
 export default function HomePage() {
   const scope = useRef<HTMLDivElement>(null);
+  const { lang, pick } = useI18n();
+  const { universe, rules, interlude, releases, outro } =
+    homeContentByLang[lang];
 
   useGSAP(
     () => {
@@ -86,44 +65,6 @@ export default function HomePage() {
             },
           );
 
-          /* Rules — each line condenses out of the dark as it crosses. */
-          scope.current
-            ?.querySelectorAll<HTMLElement>(".rules__row")
-            .forEach((row) => {
-              const text = row.querySelector(".rules__text");
-              const index = row.querySelector(".rules__index");
-              if (!text || !index) return;
-
-              gsap.fromTo(
-                text,
-                { autoAlpha: 0.13, y: 26 },
-                {
-                  autoAlpha: 1,
-                  y: 0,
-                  ease: "none",
-                  scrollTrigger: {
-                    trigger: row,
-                    start: "top 92%",
-                    end: "top 58%",
-                    scrub: true,
-                  },
-                },
-              );
-              gsap.fromTo(
-                index,
-                { autoAlpha: 0 },
-                {
-                  autoAlpha: 1,
-                  ease: "none",
-                  scrollTrigger: {
-                    trigger: row,
-                    start: "top 92%",
-                    end: "top 74%",
-                    scrub: true,
-                  },
-                },
-              );
-            });
         },
         scope,
       );
@@ -136,52 +77,24 @@ export default function HomePage() {
     { scope },
   );
 
+  /* Two exclusive hero states: the editorial news hero when the journal has
+   * entries, otherwise the canonical Arkane hero — never both. */
+  const hasNews = sortedNews().length > 0;
+
   return (
     <div ref={scope}>
       {/* ---------------------------------------------------------- Hero */}
-      <section className="hero" aria-labelledby="hero-title">
-        <img
-          className="hero__image"
-          src={hero.image.src}
-          alt={hero.image.alt}
-          role="presentation"
-          fetchPriority="high"
-          style={{ "--hero-object": hero.image.position } as CSSProperties}
-        />
-        <div className="hero__overlay" aria-hidden="true" />
-
-        <div className="hero__content container">
-          <p className="label label--accent hero__eyebrow">{hero.eyebrow}</p>
-
-          <div className="hero__grid">
-            <HeroTitle />
-
-            <div className="hero__side">
-              <p className="hero__statement">{hero.statement}</p>
-              <div className="hero__actions">
-                <a className="btn btn--solid" href={hero.primaryCta.path}>
-                  {hero.primaryCta.label}
-                  <ArrowRight size={16} aria-hidden="true" />
-                </a>
-                <a className="btn" href={hero.secondaryCta.path}>
-                  {hero.secondaryCta.label}
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <ul role="list" className="hero__meta">
-            {hero.meta.map((item) => (
-              <li key={item} className="label hero__meta-item">
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
+      {hasNews ? (
+        <HomeNews />
+      ) : (
+        <ArkaneHero />
+      )}
 
       {/* ------------------------------------------------------- Universe */}
-      <ArkaneUniverse label={universe.label} />
+      <ArkaneUniverse
+        label={universe.label}
+        items={rules.items.map(pick)}
+      />
 
       {/* ------------------------------------------------------ Interlude */}
       <figure className="interlude">
@@ -258,30 +171,6 @@ export default function HomePage() {
               </li>
             ))}
           </ul>
-        </div>
-      </section>
-
-      {/* ---------------------------------------------------------- Rules */}
-      <section className="rules" aria-labelledby="rules-heading">
-        <div className="rules__inner container">
-          <Reveal>
-            <h2 id="rules-heading" className="label rules__label">
-              {rules.label}
-            </h2>
-          </Reveal>
-
-          <ol className="rules__list">
-            {rules.items.map((rule, i) => (
-              <li key={rule} className="rules__item">
-                <div className="rules__row">
-                  <span className="rules__index" aria-hidden="true">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <p className="rules__text">{rule}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
         </div>
       </section>
 

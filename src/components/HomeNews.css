@@ -1,0 +1,301 @@
+/* ===========================================================================
+ * Home — Actualités banner: editorial split hero (text left, poster stage
+ * right). Posters are never cropped; slide change re-mounts via `key` so
+ * CSS entrance animations replay. Instant under prefers-reduced-motion.
+ * ========================================================================= */
+
+.news-banner {
+  position: relative;
+  border-block: 1px solid var(--color-line);
+  background:
+    radial-gradient(
+      ellipse 60% 80% at 75% 50%,
+      rgba(255, 255, 255, 0.04),
+      transparent 70%
+    ),
+    var(--color-bg);
+  overflow: hidden;
+}
+
+.news-banner__slide {
+  /* key remount → entrance animations replay */
+}
+
+.news-banner__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  align-items: center;
+  gap: var(--space-7);
+  /* Near-full hero viewport — trimmed headroom so the composition sits
+   * higher instead of floating in dead space. */
+  min-height: calc(88svh - var(--header-height));
+  padding-block: var(--space-5) var(--space-7);
+}
+
+/* ------------------------------------------------------------ Text ------- */
+
+.news-banner__text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-5);
+  max-width: 36rem;
+}
+
+.news-banner__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.news-banner__eyebrow::before {
+  content: "";
+  width: 0.6em;
+  height: 0.6em;
+  background: var(--color-accent);
+}
+
+.news-banner__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.news-banner__kind {
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-accent-strong);
+}
+
+.news-banner__counter {
+  color: var(--color-text-faint);
+}
+
+.news-banner__title {
+  min-width: 0;
+  font-size: clamp(2.25rem, 5vw, 4.5rem);
+  font-weight: 900;
+  font-stretch: 118%;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+}
+
+.news-banner__excerpt {
+  font-size: var(--text-base);
+  line-height: 1.65;
+  color: var(--color-text-muted);
+  max-width: 30rem;
+}
+
+.news-banner__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+  padding: 0.7rem 1.4rem;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text);
+  transition:
+    border-color var(--duration-fast) var(--ease),
+    background-color var(--duration-fast) var(--ease);
+}
+
+.news-banner__cta:hover,
+.news-banner__cta:focus-visible {
+  border-color: var(--color-accent);
+  background: rgba(200, 16, 46, 0.08);
+}
+
+/* Entrance choreography — plays on each slide remount. */
+.news-banner__eyebrow,
+.news-banner__meta,
+.news-banner__title,
+.news-banner__excerpt,
+.news-banner__cta {
+  animation: news-banner-rise 1s var(--ease) both;
+}
+
+.news-banner__meta {
+  animation-delay: 0.15s;
+}
+
+.news-banner__title {
+  animation-delay: 0.3s;
+}
+
+.news-banner__excerpt {
+  animation-delay: 0.45s;
+}
+
+.news-banner__cta {
+  animation-delay: 0.6s;
+}
+
+@keyframes news-banner-rise {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ------------------------------------------------------------- Stage ----- */
+
+.news-banner__stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 30rem;
+}
+
+.news-banner__ghost {
+  position: absolute;
+  z-index: 0;
+  font-size: clamp(9rem, 26vw, 22rem);
+  font-weight: 900;
+  font-stretch: 118%;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.14);
+  user-select: none;
+}
+
+.news-banner__poster {
+  position: relative;
+  z-index: 1;
+  display: block;
+  max-width: min(100%, 34rem);
+  max-height: 64svh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: var(--radius);
+  box-shadow: 0 2rem 5rem rgba(0, 0, 0, 0.55);
+  animation: news-banner-poster 1.2s var(--ease) both;
+}
+
+@keyframes news-banner-poster {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(0.75rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* --------------------------------------------------------------- Nav ----- */
+
+.news-banner__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding-block: var(--space-4);
+  border-top: 1px solid var(--color-line);
+}
+
+.news-banner__arrow {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  color: var(--color-text-muted);
+  transition:
+    border-color var(--duration-fast) var(--ease),
+    color var(--duration-fast) var(--ease);
+}
+
+.news-banner__arrow:hover {
+  border-color: var(--color-accent);
+  color: var(--color-text);
+}
+
+.news-banner__dots {
+  display: inline-flex;
+  gap: var(--space-2);
+  margin-inline: auto;
+}
+
+.news-banner__dot {
+  padding: 0.5rem 0.7rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-text-faint);
+  border-bottom: 1px solid transparent;
+  transition:
+    color var(--duration-fast) var(--ease),
+    border-color var(--duration-fast) var(--ease);
+}
+
+.news-banner__dot:hover {
+  color: var(--color-text);
+}
+
+.news-banner__dot[aria-current="true"] {
+  color: var(--color-accent-strong);
+  border-bottom-color: var(--color-accent);
+}
+
+/* ---------------------------------------------------------- Responsive --- */
+
+@media (max-width: 48rem) {
+  .news-banner__inner {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    min-height: 0;
+    padding-block: var(--space-6);
+  }
+
+  /* Visual first on mobile — the poster leads, the text follows. */
+  .news-banner__stage {
+    order: -1;
+    min-height: 0;
+  }
+
+  .news-banner__ghost {
+    font-size: clamp(6rem, 32vw, 12rem);
+  }
+
+  .news-banner__poster {
+    max-height: 52svh;
+    max-width: min(100%, 26rem);
+  }
+
+  .news-banner__title {
+    font-size: clamp(1.75rem, 8vw, 2.75rem);
+  }
+
+  .news-banner__nav {
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .news-banner__eyebrow,
+  .news-banner__meta,
+  .news-banner__title,
+  .news-banner__excerpt,
+  .news-banner__cta,
+  .news-banner__poster {
+    animation: none;
+  }
+}
