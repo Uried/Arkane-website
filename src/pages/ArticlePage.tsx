@@ -18,15 +18,19 @@ function formatDate(iso?: string) {
   });
 }
 
-function applyArticleMeta(article: NewsEntry | undefined, missing: string) {
+function applyArticleMeta(
+  article: NewsEntry | undefined,
+  missing: string,
+  pick: ReturnType<typeof useI18n>["pick"],
+) {
   document.title = article
-    ? `${article.title} — ${siteConfig.name}`
+    ? `${pick(article.title)} — ${siteConfig.name}`
     : `${missing} ${siteConfig.name}`;
   document
     .querySelector('meta[name="description"]')
     ?.setAttribute(
       "content",
-      article?.excerpt ?? `${siteConfig.name} — actualité.`,
+      article?.excerpt ? pick(article.excerpt) : `${siteConfig.name} — actualité.`,
     );
 }
 
@@ -35,7 +39,7 @@ interface ArticlePageProps {
 }
 
 export default function ArticlePage({ slug }: ArticlePageProps) {
-  const { t } = useI18n();
+  const { t, pick } = useI18n();
   const article = getNews(slug);
 
   const sorted = sortedNews();
@@ -54,8 +58,8 @@ export default function ArticlePage({ slug }: ArticlePageProps) {
       .filter((r): r is NonNullable<typeof r> => Boolean(r)) ?? [];
 
   useEffect(() => {
-    applyArticleMeta(article, t("news.missing"));
-  }, [article, t]);
+    applyArticleMeta(article, t("news.missing"), pick);
+  }, [article, t, pick]);
 
   if (!article) {
     return (
@@ -94,11 +98,11 @@ export default function ArticlePage({ slug }: ArticlePageProps) {
             </div>
           </Reveal>
           <Reveal delay={80}>
-            <h1 className="article__title">{article.title}</h1>
+            <h1 className="article__title">{pick(article.title)}</h1>
           </Reveal>
           {article.excerpt && (
             <Reveal delay={140}>
-              <p className="article__excerpt">{article.excerpt}</p>
+              <p className="article__excerpt">{pick(article.excerpt)}</p>
             </Reveal>
           )}
         </header>
@@ -108,7 +112,7 @@ export default function ArticlePage({ slug }: ArticlePageProps) {
             <figure className="article__cover">
               <img
                 src={article.coverUrl}
-                alt={article.coverAlt ?? ""}
+                alt={article.coverAlt ? pick(article.coverAlt) : ""}
                 style={
                   {
                     "--article-object": article.coverPosition ?? "50% 40%",
@@ -123,7 +127,7 @@ export default function ArticlePage({ slug }: ArticlePageProps) {
           <Reveal delay={220}>
             <div className="article__body">
               {article.body.map((paragraph, i) => (
-                <p key={i}>{paragraph}</p>
+                <p key={i}>{pick(paragraph)}</p>
               ))}
             </div>
           </Reveal>
@@ -161,7 +165,7 @@ export default function ArticlePage({ slug }: ArticlePageProps) {
             {prev ? (
               <a className="article__nav-link" href={`/editorial/${prev.slug}`}>
                 <span className="label">{t("action.prev")}</span>
-                <span className="article__nav-title">{prev.title}</span>
+                <span className="article__nav-title">{pick(prev.title)}</span>
               </a>
             ) : (
               <span />
@@ -172,7 +176,7 @@ export default function ArticlePage({ slug }: ArticlePageProps) {
                 href={`/editorial/${next.slug}`}
               >
                 <span className="label">{t("action.next")}</span>
-                <span className="article__nav-title">{next.title}</span>
+                <span className="article__nav-title">{pick(next.title)}</span>
               </a>
             )}
           </nav>

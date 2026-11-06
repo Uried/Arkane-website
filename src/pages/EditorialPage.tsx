@@ -32,7 +32,7 @@ function formatDate(iso?: string) {
 type KindFilter = NewsKind | "all";
 
 export default function EditorialPage() {
-  const { t } = useI18n();
+  const { t, pick } = useI18n();
   const scope = useRef<HTMLDivElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
   const [kind, setKind] = useState<KindFilter>("all");
@@ -46,7 +46,7 @@ export default function EditorialPage() {
       if (kind !== "all" && entry.kind !== kind) return false;
       const needle = normalize(query.trim());
       if (!needle) return true;
-      return [entry.title, entry.excerpt ?? ""]
+      return [pick(entry.title), entry.excerpt ? pick(entry.excerpt) : ""]
         .map(normalize)
         .some((value) => value.includes(needle));
     }),
@@ -249,7 +249,7 @@ export default function EditorialPage() {
                     <span className="news-item__kind">
                       {t(`kind.${entry.kind}` as DictKey)}
                     </span>
-                    <span className="news-item__title">{entry.title}</span>
+                    <span className="news-item__title">{pick(entry.title)}</span>
                     {entry.coverUrl && (
                       <img
                         className="news-item__thumb"

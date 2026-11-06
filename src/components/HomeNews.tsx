@@ -17,7 +17,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
  * Returns null when the journal is empty: HomePage renders ArkaneHero itself.
  */
 export default function HomeNews() {
-  const { t } = useI18n();
+  const { t, pick } = useI18n();
   const items = sortedNews();
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(true);
@@ -70,7 +70,7 @@ export default function HomeNews() {
         >
           {/* Screen-reader status of the current slide. */}
           <p className="visually-hidden" role="status">
-            {t("news.slideOf")} {safeIndex + 1} / {count} — {entry.title}
+            {t("news.slideOf")} {safeIndex + 1} / {count} — {pick(entry.title)}
           </p>
 
           <div className="news-banner__slide" key={entry.id}>
@@ -87,9 +87,9 @@ export default function HomeNews() {
                     {pad(safeIndex + 1)} / {pad(count)}
                   </span>
                 </p>
-                <h2 className="news-banner__title">{entry.title}</h2>
+                <h2 className="news-banner__title">{pick(entry.title)}</h2>
                 {entry.excerpt && (
-                  <p className="news-banner__excerpt">{entry.excerpt}</p>
+                  <p className="news-banner__excerpt">{pick(entry.excerpt)}</p>
                 )}
                 <a
                   className="news-banner__cta"
@@ -111,7 +111,7 @@ export default function HomeNews() {
                   <img
                     className="news-banner__poster"
                     src={entry.coverUrl}
-                    alt={entry.coverAlt ?? ""}
+                    alt={entry.coverAlt ? pick(entry.coverAlt) : ""}
                     decoding="async"
                   />
                 )}
@@ -139,7 +139,7 @@ export default function HomeNews() {
                     key={item.id}
                     type="button"
                     className="news-banner__dot"
-                    aria-label={`${t("news.slideOf")} ${i + 1} — ${item.title}`}
+                    aria-label={`${t("news.slideOf")} ${i + 1} — ${pick(item.title)}`}
                     aria-current={i === safeIndex}
                     onClick={() => setIndex(i)}
                   >

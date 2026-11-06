@@ -135,8 +135,8 @@ export interface LocalizedText {
 export interface Article {
   id: EntityId;
   slug: string;
-  title: string;
-  excerpt?: string;
+  title: LocalizedText;
+  excerpt?: LocalizedText;
   publishedAt?: string;
   coverUrl?: string;
 }
