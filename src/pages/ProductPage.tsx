@@ -13,25 +13,35 @@ interface ProductPageProps {
 }
 
 export default function ProductPage({ slug }: ProductPageProps) {
-  const { t } = useI18n();
+  const { t, pick } = useI18n();
   const product = getProduct(slug);
   const { add, setOpen } = useCart();
   const [variantId, setVariantId] = useState<string | undefined>(
     product?.variants?.[0]?.id,
   );
+  const [imageIndex, setImageIndex] = useState(0);
+
+  /* Reset selection when navigating between products (adjust-during-render). */
+  const [prevSlug, setPrevSlug] = useState(slug);
+  if (prevSlug !== slug) {
+    setPrevSlug(slug);
+    setVariantId(product?.variants?.[0]?.id);
+    setImageIndex(0);
+  }
 
   useEffect(() => {
     document.title = product
-      ? `${product.name} — ${siteConfig.name}`
+      ? `${pick(product.name)} — ${siteConfig.name}`
       : `${t("shop.missing")} ${siteConfig.name}`;
     document
       .querySelector('meta[name="description"]')
       ?.setAttribute(
         "content",
-        product?.description ??
-          `${siteConfig.name} — boutique officielle.`,
+        product?.description
+          ? pick(product.description)
+          : `${siteConfig.name} — boutique officielle.`,
       );
-  }, [product, t]);
+  }, [product, t, pick]);
 
   if (!product) {
     return (
@@ -52,6 +62,7 @@ export default function ProductPage({ slug }: ProductPageProps) {
 
   const soldOut = product.inStock === false;
   const purchasable = product.inStock === true;
+  const activeImage = product.images[imageIndex] ?? product.images[0];
 
   return (
     <article className="product">
@@ -62,26 +73,59 @@ export default function ProductPage({ slug }: ProductPageProps) {
         </a>
 
         <div className="product__layout">
-          <Reveal>
-            <div className="product__media">
-              {product.images[0] && (
-                <img
-                  src={product.images[0].url}
-                  alt={product.images[0].alt}
-                  style={
-                    {
-                      "--product-object":
-                        product.images[0].position ?? "50% 40%",
-                    } as CSSProperties
-                  }
-                />
-              )}
-            </div>
-          </Reveal>
+          <div className="product__gallery">
+            <Reveal>
+              <div className="product__media">
+                {activeImage && (
+                  <img
+                    src={activeImage.url}
+                    alt={pick(activeImage.alt)}
+                    style={
+                      {
+                        "--product-object":
+                          activeImage.position ?? "50% 40%",
+                      } as CSSProperties
+                    }
+                  />
+                )}
+              </div>
+            </Reveal>
+
+            {product.images.length > 1 && (
+              <div
+                className="product__thumbs"
+                role="group"
+                aria-label={t("shop.gallery")}
+              >
+                {product.images.map((image, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    className="product__thumb"
+                    aria-pressed={i === imageIndex}
+                    aria-label={`${t("shop.viewOf")} ${i + 1}`}
+                    onClick={() => setImageIndex(i)}
+                  >
+                    <img
+                      src={image.url}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
           <div className="product__side">
             <Reveal delay={80}>
               <div className="product__tags">
+                <span
+                  className={`product__tag${product.limited ? " product__tag--accent" : ""}`}
+                >
+                  {t(`col.${product.collection}` as DictKey)}
+                </span>
                 {product.category && (
                   <span className="product__tag">
                     {t(`cat.${product.category}` as DictKey)}
@@ -89,17 +133,21 @@ export default function ProductPage({ slug }: ProductPageProps) {
                 )}
                 {product.limited && (
                   <span className="product__tag product__tag--accent">
-                    Édition limitée
+                    {t("shop.limited")}
                   </span>
                 )}
               </div>
-              <h1 className="product__name">{product.name}</h1>
-              <p className="product__price">{formatPrice(product.priceCents)}</p>
+              <h1 className="product__name">{pick(product.name)}</h1>
+              {product.priceCents != null && (
+                <p className="product__price">
+                  {formatPrice(product.priceCents)}
+                </p>
+              )}
             </Reveal>
 
             {product.description && (
               <Reveal delay={140}>
-                <p className="product__desc">{product.description}</p>
+                <p className="product__desc">{pick(product.description)}</p>
               </Reveal>
             )}
 
@@ -116,7 +164,7 @@ export default function ProductPage({ slug }: ProductPageProps) {
                         aria-pressed={variantId === variant.id}
                         onClick={() => setVariantId(variant.id)}
                       >
-                        {variant.label}
+                        {pick(variant.label)}
                       </button>
                     ))}
                   </div>

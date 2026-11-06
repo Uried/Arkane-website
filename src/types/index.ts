@@ -144,10 +144,11 @@ export interface Article {
 export interface Product {
   id: EntityId;
   slug: string;
-  name: string;
-  description?: string;
-  /** Price in the smallest currency unit (e.g. cents) to avoid floats. */
-  priceCents: number;
+  name: LocalizedText;
+  description?: LocalizedText;
+  /** Price in the smallest currency unit (e.g. cents) to avoid floats.
+   *  Absent until a real price is announced — never shown as zero. */
+  priceCents?: number;
   currency: string;
   imageUrl?: string;
 }

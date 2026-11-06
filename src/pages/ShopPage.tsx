@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { ArrowRight } from "lucide-react";
 import {
   categoryOrder,
+  collectionOrder,
   formatPrice,
   products,
   type ProductCategory,
+  type ProductCollection,
 } from "../data/products";
 import { siteConfig } from "../data/site";
 import { gsap, ScrollTrigger, useGSAP } from "../lib/gsap";
@@ -11,19 +14,31 @@ import "./ShopPage.css";
 import type { DictKey } from "../i18n/dict";
 import { useI18n } from "../lib/i18n-store";
 
+type CollectionFilter = ProductCollection | "all";
 type CategoryFilter = ProductCategory | "all";
 
 export default function ShopPage() {
-  const { t } = useI18n();
+  const { t, pick } = useI18n();
   const scope = useRef<HTMLDivElement>(null);
+  const [collection, setCollection] = useState<CollectionFilter>("all");
   const [category, setCategory] = useState<CategoryFilter>("all");
 
-  const available = new Set(
-    products.map((p) => p.category).filter(Boolean) as ProductCategory[],
+  const availableCollections = new Set(products.map((p) => p.collection));
+  const availableCategories = new Set(
+    products
+      .filter((p) => collection === "all" || p.collection === collection)
+      .map((p) => p.category)
+      .filter(Boolean) as ProductCategory[],
   );
+
   const filtered = products.filter(
-    (p) => category === "all" || p.category === category,
+    (p) =>
+      (collection === "all" || p.collection === collection) &&
+      (category === "all" || p.category === category),
   );
+
+  const countFor = (c: ProductCollection) =>
+    products.filter((p) => p.collection === c).length;
 
   useEffect(() => {
     document.title = `${t("page.shop")} — ${siteConfig.name}`;
@@ -55,6 +70,11 @@ export default function ShopPage() {
               ".shop-hero__meta > *",
               { autoAlpha: 0, y: 12, duration: 0.45, stagger: 0.08 },
               "-=0.25",
+            )
+            .from(
+              ".shop-hero__intro",
+              { autoAlpha: 0, y: 14, duration: 0.5 },
+              "-=0.2",
             );
 
           gsap.fromTo(
@@ -102,17 +122,61 @@ export default function ShopPage() {
           </h1>
           <div className="shop-hero__meta">
             <span className="shop-hero__rule" aria-hidden="true" />
-            <span className="label">{t("shop.merch")}</span>
+            {collectionOrder
+              .filter((c) => availableCollections.has(c))
+              .map((c) => (
+                <span key={c} className="label">
+                  {t(`col.${c}` as DictKey)} —{" "}
+                  {String(countFor(c)).padStart(2, "0")}
+                </span>
+              ))}
             <span className="label shop-hero__count">
               {String(products.length).padStart(2, "0")}
             </span>
           </div>
+          <p className="shop-hero__intro">{t("shop.intro")}</p>
         </div>
       </section>
 
       <section className="shop" aria-label="Catalogue de la boutique">
         <div className="shop__inner container">
-          {available.size > 0 && (
+          {availableCollections.size > 0 && (
+            <div
+              className="shop-filter shop-filter--collections"
+              role="group"
+              aria-label={t("shop.collections")}
+            >
+              <button
+                type="button"
+                className="shop-filter__btn"
+                aria-pressed={collection === "all"}
+                onClick={() => {
+                  setCollection("all");
+                  setCategory("all");
+                }}
+              >
+                {t("action.all")}
+              </button>
+              {collectionOrder
+                .filter((c) => availableCollections.has(c))
+                .map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    className="shop-filter__btn"
+                    aria-pressed={collection === c}
+                    onClick={() => {
+                      setCollection(c);
+                      setCategory("all");
+                    }}
+                  >
+                    {t(`col.${c}` as DictKey)}
+                  </button>
+                ))}
+            </div>
+          )}
+
+          {availableCategories.size > 0 && (
             <div
               className="shop-filter"
               role="group"
@@ -120,19 +184,19 @@ export default function ShopPage() {
             >
               <button
                 type="button"
-                className="shop-filter__btn"
+                className="shop-filter__btn shop-filter__btn--sub"
                 aria-pressed={category === "all"}
                 onClick={() => setCategory("all")}
               >
                 {t("action.all")}
               </button>
               {categoryOrder
-                .filter((c) => available.has(c))
+                .filter((c) => availableCategories.has(c))
                 .map((c) => (
                   <button
                     key={c}
                     type="button"
-                    className="shop-filter__btn"
+                    className="shop-filter__btn shop-filter__btn--sub"
                     aria-pressed={category === c}
                     onClick={() => setCategory(c)}
                   >
@@ -157,14 +221,14 @@ export default function ShopPage() {
                   <a
                     className="shop-tile__link"
                     href={`/shop/${product.slug}`}
-                    aria-label={`${product.name} — ${formatPrice(product.priceCents)}`}
+                    aria-label={pick(product.name)}
                   >
                     <span className="shop-tile__media">
                       {product.images[0] && (
                         <img
                           className="shop-tile__img"
                           src={product.images[0].url}
-                          alt={product.images[0].alt}
+                          alt={pick(product.images[0].alt)}
                           loading="lazy"
                           decoding="async"
                           style={
@@ -183,12 +247,25 @@ export default function ShopPage() {
                           {t("shop.limited")}
                         </span>
                       )}
+                      <span className="shop-tile__discover label">
+                        {t("shop.discover")}
+                        <ArrowRight size={13} aria-hidden="true" />
+                      </span>
                     </span>
                     <span className="shop-tile__meta">
-                      <span className="shop-tile__name">{product.name}</span>
-                      <span className="shop-tile__price label">
-                        {formatPrice(product.priceCents)}
+                      <span className="shop-tile__id">
+                        <span className="shop-tile__collection label">
+                          {t(`col.${product.collection}` as DictKey)}
+                        </span>
+                        <span className="shop-tile__name">
+                          {pick(product.name)}
+                        </span>
                       </span>
+                      {product.priceCents != null && (
+                        <span className="shop-tile__price label">
+                          {formatPrice(product.priceCents)}
+                        </span>
+                      )}
                     </span>
                   </a>
                 </li>

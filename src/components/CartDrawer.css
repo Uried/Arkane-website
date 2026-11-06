@@ -90,9 +90,7 @@
 .cart-drawer__thumb {
   width: 3.5rem;
   height: 3.5rem;
-  object-fit: cover;
   border-radius: var(--radius);
-  background: var(--color-surface-raised);
 }
 
 .cart-drawer__meta {

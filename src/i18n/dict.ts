@@ -165,6 +165,20 @@ export const dict = {
     en: "This product does not exist or has been removed.",
   },
   "shop.add": { fr: "Ajouter au panier", en: "Add to cart" },
+  "shop.collections": {
+    fr: "Filtrer par collection",
+    en: "Filter by collection",
+  },
+  "shop.discover": { fr: "Découvrir", en: "Discover" },
+  "shop.gallery": { fr: "Galerie du produit", en: "Product gallery" },
+  "shop.viewOf": { fr: "Vue", en: "View" },
+  "shop.intro": {
+    fr: "Les collections officielles du label — pièces signature et éditions limitées.",
+    en: "The label's official collections — signature pieces and limited editions.",
+  },
+
+  "col.signature": { fr: "Arkane Signature", en: "Arkane Signature" },
+  "col.limited": { fr: "Limited Editions", en: "Limited Editions" },
 
   "cat.vetement": { fr: "Vêtements", en: "Clothing" },
   "cat.accessoire": { fr: "Accessoires", en: "Accessories" },

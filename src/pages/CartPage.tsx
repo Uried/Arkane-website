@@ -7,7 +7,7 @@ import "./CartPage.css";
 import { useI18n } from "../lib/i18n-store";
 
 export default function CartPage() {
-  const { t } = useI18n();
+  const { t, pick } = useI18n();
   const { items, setQty, remove, count } = useCart();
   const [status, setStatus] = useState<"idle" | "unavailable">("idle");
 
@@ -24,7 +24,7 @@ export default function CartPage() {
       Boolean(l.product),
     );
   const subtotal = lines.reduce(
-    (sum, l) => sum + l.product.priceCents * l.item.qty,
+    (sum, l) => sum + (l.product.priceCents ?? 0) * l.item.qty,
     0,
   );
 
@@ -62,20 +62,22 @@ export default function CartPage() {
                       />
                     )}
                     <div className="cart-line__meta">
-                      <p className="cart-line__name">{product.name}</p>
+                      <p className="cart-line__name">{pick(product.name)}</p>
                       {variant && (
                         <p className="cart-line__variant label">
-                          {variant.label}
+                          {pick(variant.label)}
                         </p>
                       )}
-                      <p className="cart-line__price label">
-                        {formatPrice(product.priceCents)}
-                      </p>
+                      {product.priceCents != null && (
+                        <p className="cart-line__price label">
+                          {formatPrice(product.priceCents)}
+                        </p>
+                      )}
                     </div>
                     <div className="cart-line__qty">
                       <button
                         type="button"
-                        aria-label={`${t("cart.decrease")} — ${product.name}`}
+                        aria-label={`${t("cart.decrease")} — ${pick(product.name)}`}
                         onClick={() => setQty(item, item.qty - 1)}
                       >
                         <Minus size={14} />
@@ -83,7 +85,7 @@ export default function CartPage() {
                       <span aria-live="polite">{item.qty}</span>
                       <button
                         type="button"
-                        aria-label={`${t("cart.increase")} — ${product.name}`}
+                        aria-label={`${t("cart.increase")} — ${pick(product.name)}`}
                         onClick={() => setQty(item, item.qty + 1)}
                       >
                         <Plus size={14} />
@@ -92,7 +94,7 @@ export default function CartPage() {
                     <button
                       type="button"
                       className="cart-line__remove"
-                      aria-label={`${t("cart.remove")} ${product.name}`}
+                      aria-label={`${t("cart.remove")} ${pick(product.name)}`}
                       onClick={() => remove(item)}
                     >
                       <Trash2 size={15} />

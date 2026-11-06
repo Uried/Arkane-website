@@ -58,9 +58,7 @@
 .cart-line__thumb {
   width: 4.5rem;
   height: 4.5rem;
-  object-fit: cover;
   border-radius: var(--radius);
-  background: var(--color-surface);
 }
 
 .cart-line__meta {

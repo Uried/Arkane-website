@@ -1,0 +1,10 @@
+.shop-tile__img,
+.product__media img,
+.product__thumb img,
+.cart-line__thumb,
+.cart-drawer__thumb {
+  display: block;
+  object-fit: contain;
+  object-position: center;
+  background: #050505;
+}

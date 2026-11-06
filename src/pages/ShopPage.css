@@ -66,6 +66,13 @@
   color: var(--color-text);
 }
 
+.shop-hero__intro {
+  max-width: 34rem;
+  color: var(--color-text-muted);
+  font-size: var(--text-base);
+  line-height: 1.6;
+}
+
 /* ------------------------------------------------------------ Toolbar ---- */
 
 .shop__inner {
@@ -73,10 +80,21 @@
 }
 
 .shop-filter {
-  display: inline-flex;
+  display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
+}
+
+.shop-filter + .shop-filter {
+  margin-top: var(--space-3);
+}
+
+.shop-filter:last-of-type {
   padding-bottom: var(--space-6);
+}
+
+.shop-filter--collections .shop-filter__btn {
+  padding: 0.6rem 1.1rem;
 }
 
 .shop-filter__btn {
@@ -100,6 +118,11 @@
 .shop-filter__btn[aria-pressed="true"] {
   border-color: var(--color-accent);
   color: var(--color-text);
+}
+
+.shop-filter__btn--sub {
+  font-size: 0.65rem;
+  color: var(--color-text-faint);
 }
 
 .shop__empty {
@@ -135,24 +158,21 @@
 .shop-tile__media {
   position: relative;
   display: block;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
-  background: var(--color-surface);
+  background: #050505;
   border-radius: var(--radius);
 }
 
 .shop-tile__img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: var(--shop-object, 50% 40%);
-  filter: saturate(0.8) contrast(1.06) brightness(0.95);
-  transition: transform var(--duration-slow) var(--ease);
+  transition: opacity var(--duration-slow) var(--ease);
 }
 
 .shop-tile__link:hover .shop-tile__img,
 .shop-tile__link:focus-visible .shop-tile__img {
-  transform: scale(1.04);
+  opacity: 0.9;
 }
 
 .shop-tile__flag {
@@ -180,11 +200,47 @@
   right: var(--space-3);
 }
 
+.shop-tile__discover {
+  position: absolute;
+  right: var(--space-3);
+  bottom: var(--space-3);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.45rem 0.75rem;
+  background: rgba(5, 5, 5, 0.82);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius);
+  color: var(--color-text);
+  opacity: 0;
+  transform: translateY(4px);
+  transition:
+    opacity var(--duration-fast) var(--ease),
+    transform var(--duration-fast) var(--ease);
+}
+
+.shop-tile__link:hover .shop-tile__discover,
+.shop-tile__link:focus-visible .shop-tile__discover {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .shop-tile__meta {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: var(--space-3);
+}
+
+.shop-tile__id {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.shop-tile__collection {
+  color: var(--color-text-faint);
 }
 
 .shop-tile__name {
@@ -216,12 +272,20 @@
   }
 }
 
+@media (hover: none) {
+  .shop-tile__discover {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .shop-tile__img {
+  .shop-tile__img,
+  .shop-tile__discover {
     transition: none;
   }
 
   .shop-tile__link:hover .shop-tile__img {
-    transform: none;
+    opacity: 1;
   }
 }

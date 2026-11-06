@@ -7,7 +7,7 @@ import { useI18n } from "../lib/i18n-store";
 
 /** Sliding cart panel — quick adjustments, full recap lives on /shop/panier. */
 export default function CartDrawer() {
-  const { t } = useI18n();
+  const { t, pick } = useI18n();
   const { isOpen, setOpen, items, setQty, remove, count } = useCart();
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -28,7 +28,7 @@ export default function CartDrawer() {
         Boolean(l.product),
     );
   const subtotal = lines.reduce(
-    (sum, l) => sum + l.product.priceCents * l.item.qty,
+    (sum, l) => sum + (l.product.priceCents ?? 0) * l.item.qty,
     0,
   );
 
@@ -79,15 +79,17 @@ export default function CartDrawer() {
                       />
                     )}
                     <div className="cart-drawer__meta">
-                      <p className="cart-drawer__name">{product.name}</p>
+                      <p className="cart-drawer__name">{pick(product.name)}</p>
                       {variant && (
                         <p className="cart-drawer__variant label">
-                          {variant.label}
+                          {pick(variant.label)}
                         </p>
                       )}
-                      <p className="cart-drawer__price label">
-                        {formatPrice(product.priceCents)}
-                      </p>
+                      {product.priceCents != null && (
+                        <p className="cart-drawer__price label">
+                          {formatPrice(product.priceCents)}
+                        </p>
+                      )}
                     </div>
                     <div className="cart-drawer__qty">
                       <button
@@ -111,7 +113,7 @@ export default function CartDrawer() {
                     <button
                       type="button"
                       className="cart-drawer__remove"
-                      aria-label={`${t("cart.remove")} ${product.name}`}
+                      aria-label={`${t("cart.remove")} ${pick(product.name)}`}
                       onClick={() => remove(item)}
                       tabIndex={isOpen ? 0 : -1}
                     >
