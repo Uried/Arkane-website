@@ -1,0 +1,37 @@
+/* ---------------------------------------------------------------------------
+ * Social links — monochrome brand glyphs, black/white Arkane identity.
+ * Confirmed platforms are links; the rest stay inert visuals.
+ * ------------------------------------------------------------------------- */
+
+.social-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  padding: 0;
+  list-style: none;
+}
+
+.social-links__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.55);
+  transition:
+    color var(--duration-fast) var(--ease),
+    transform var(--duration-fast) var(--ease);
+}
+
+.social-links__link svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+a.social-links__link:hover {
+  color: var(--color-text);
+  transform: translateY(-1px);
+}
+
+.social-links__link--static {
+  color: rgba(255, 255, 255, 0.28);
+}

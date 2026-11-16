@@ -152,3 +152,15 @@ export interface Product {
   currency: string;
   imageUrl?: string;
 }
+
+export interface SocialLink {
+  id: string;
+  /** Official platform name — used for aria-label and tooltips. */
+  name: string;
+  /** Brand glyph: SVG path data drawn on a 24×24 viewBox. */
+  icon: string;
+  /** Confirmed official URL — absent for platforms without a verified account. */
+  url?: string;
+  /** Only platforms with a confirmed URL are rendered as links. */
+  clickable: boolean;
+}

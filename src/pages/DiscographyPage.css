@@ -1,8 +1,9 @@
 /* ===========================================================================
- * Discographie — chronological catalogue index.
+ * Discographie — editorial asymmetric staggered grid.
  *
- * Timeline rows (index · cover · title · artist · kind) that unfold into a
- * detail panel (large artwork + integrated player + platform links).
+ * Releases are exhibited like artworks: varied column spans, voluntary
+ * vertical offsets, covers at their natural ratios. Clicking a piece unfolds
+ * a full-width detail (integrated player + platform links).
  * ========================================================================= */
 
 /* ------------------------------------------------------------- Hero ------ */
@@ -156,9 +157,22 @@
   color: var(--color-text-faint);
 }
 
-/* ----------------------------------------------------------- Timeline ---- */
+/* ---------------------------------------------------- Staggered grid ----- */
 
-.disc-year__marker {
+/* 12 columns — the six slots below place themselves into balanced,
+ * offset rows (5+4+3 / 4+5+3 per row, staggered margins). */
+.disc-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--space-5);
+  row-gap: var(--space-9);
+  align-items: start;
+  padding: 0;
+  list-style: none;
+}
+
+.disc-grid__year {
+  grid-column: 1 / -1;
   font-size: clamp(2.75rem, 8vw, 7rem);
   font-weight: 900;
   font-stretch: 118%;
@@ -166,55 +180,197 @@
   letter-spacing: -0.03em;
   color: transparent;
   -webkit-text-stroke: 1px rgba(255, 255, 255, 0.28);
-  padding-block: var(--space-6) var(--space-3);
   user-select: none;
 }
 
-.disc-list {
-  padding: 0;
-  list-style: none;
-  border-top: 1px solid var(--color-line);
+/* Slots — spans vary, vertical offsets create the editorial stagger.
+ * Pieces keep their natural artwork ratio (no forced aspect-ratio). */
+.disc-piece--a {
+  grid-column: span 5;
 }
 
-.disc-item + .disc-item {
-  border-top: 1px solid var(--color-line);
+.disc-piece--b {
+  grid-column: span 4;
+  margin-top: var(--space-9);
 }
 
-.disc-item__row {
-  display: grid;
-  grid-template-columns: 3rem 3.5rem minmax(0, 1fr) auto auto 1.5rem;
-  align-items: center;
+.disc-piece--c {
+  grid-column: span 3;
+  margin-top: var(--space-6);
+}
+
+.disc-piece--d {
+  grid-column: span 4;
+  margin-top: var(--space-8);
+}
+
+.disc-piece--e {
+  grid-column: span 5;
+}
+
+.disc-piece--f {
+  grid-column: span 3;
+  margin-top: var(--space-7);
+}
+
+/* ------------------------------------------------------------ Piece ------ */
+
+.disc-piece__hit {
+  display: flex;
+  flex-direction: column;
   gap: var(--space-4);
   width: 100%;
-  padding-block: var(--space-4);
   text-align: left;
   color: var(--color-text);
-  transition: background-color var(--duration-fast) var(--ease);
 }
 
-.disc-item__row:hover {
-  background: rgba(255, 255, 255, 0.03);
+.disc-piece__media {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: var(--color-surface);
 }
 
-.disc-item__index {
+.disc-piece__cover {
+  width: 100%;
+  height: auto;
+  transition:
+    transform var(--duration-slow) var(--ease),
+    filter var(--duration-slow) var(--ease);
+}
+
+@media (hover: hover) {
+  .disc-piece__hit:hover .disc-piece__cover,
+  .disc-piece__hit:focus-visible .disc-piece__cover {
+    transform: scale(1.03);
+    filter: brightness(1.06);
+  }
+}
+
+/* "Listen" cue — appears on hover/focus, stays visible while open. */
+.disc-piece__cue {
+  position: absolute;
+  right: var(--space-3);
+  bottom: var(--space-3);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.4rem 0.75rem;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(6px);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text);
+  opacity: 0;
+  transform: translateY(4px);
+  transition:
+    opacity var(--duration-fast) var(--ease),
+    transform var(--duration-fast) var(--ease);
+}
+
+@media (hover: hover) {
+  .disc-piece__hit:hover .disc-piece__cue,
+  .disc-piece__hit:focus-visible .disc-piece__cue {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.disc-piece.is-open .disc-piece__cue {
+  opacity: 1;
+  transform: none;
+}
+
+/* Caption — index · title/artist · kind, discreet and baseline-aligned. */
+.disc-piece__caption {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.disc-piece__index {
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   letter-spacing: var(--tracking-wider);
   color: var(--color-text-faint);
 }
 
-.disc-item__thumb {
-  width: 3.5rem;
-  height: 3.5rem;
-  object-fit: cover;
-  border-radius: var(--radius);
-  background: var(--color-surface);
-}
-
-.disc-item__title {
+.disc-piece__title {
+  display: block;
   min-width: 0;
   overflow-wrap: break-word;
-  font-size: clamp(1.25rem, 2.6vw, 2rem);
+  font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+  font-weight: 800;
+  font-stretch: 114%;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  transition: color var(--duration-fast) var(--ease);
+}
+
+/* Dominant slots carry a stronger typographic weight. */
+.disc-piece--a .disc-piece__title,
+.disc-piece--e .disc-piece__title {
+  font-size: clamp(1.4rem, 2.4vw, 2.1rem);
+}
+
+.disc-piece__hit:hover .disc-piece__title {
+  color: var(--color-text);
+}
+
+.disc-piece__artist {
+  display: block;
+  margin-top: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.disc-piece__kind {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------- Expandable detail ----- */
+
+.disc-detail {
+  grid-column: 1 / -1;
+}
+
+.disc-detail__clip {
+  display: grid;
+  grid-template-rows: 1fr;
+  overflow: hidden;
+  animation: disc-detail-in var(--duration-slow) var(--ease);
+}
+
+@keyframes disc-detail-in {
+  from {
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+}
+
+.disc-detail__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-6);
+  padding-block: var(--space-5) var(--space-7);
+  border-top: 1px solid var(--color-line);
+}
+
+.disc-detail__title {
+  font-size: var(--display-sm, 1.75rem);
   font-weight: 800;
   font-stretch: 114%;
   text-transform: uppercase;
@@ -222,80 +378,26 @@
   line-height: 1.05;
 }
 
-.disc-item__artist {
+.disc-detail__artist {
+  margin-top: var(--space-2);
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   letter-spacing: var(--tracking-wider);
   text-transform: uppercase;
   color: var(--color-text-muted);
-  white-space: nowrap;
 }
 
-.disc-item__kind {
-  padding: 0.3rem 0.6rem;
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius);
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
-  color: var(--color-text-faint);
-  white-space: nowrap;
+.disc-detail__kind {
+  margin-top: var(--space-4);
 }
 
-.disc-item__chevron {
-  color: var(--color-text-faint);
-  transition:
-    transform var(--duration-fast) var(--ease),
-    color var(--duration-fast) var(--ease);
-}
-
-.disc-item.is-open .disc-item__chevron {
-  transform: rotate(180deg);
-  color: var(--color-text);
-}
-
-/* ---- Expandable detail — CSS grid-rows accordion (no layout thrash) ---- */
-
-.disc-item__panel {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows var(--duration-slow) var(--ease);
-}
-
-.disc-item.is-open .disc-item__panel {
-  grid-template-rows: 1fr;
-}
-
-.disc-item__panel-inner {
-  min-height: 0;
-  overflow: hidden;
-  display: grid;
-  grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
-  align-items: start;
-  gap: var(--space-6);
-}
-
-.disc-item.is-open .disc-item__panel-inner {
-  padding-bottom: var(--space-6);
-}
-
-.disc-item__cover {
-  width: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
-  border-radius: var(--radius);
-  background: var(--color-surface);
-}
-
-.disc-item__side {
+.disc-detail__body {
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
-  padding-top: var(--space-2);
 }
 
-.disc-item__platforms {
+.disc-detail__platforms {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
@@ -303,7 +405,7 @@
   list-style: none;
 }
 
-.disc-item__platform {
+.disc-detail__platform {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
@@ -320,13 +422,51 @@
     color var(--duration-fast) var(--ease);
 }
 
-.disc-item__platform:hover {
+.disc-detail__platform:hover {
   border-color: var(--color-accent);
   color: var(--color-text);
 }
 
 /* ---------------------------------------------------------- Responsive --- */
 
+/* Tablet — 6 columns, asymmetry preserved in 2-piece rows. */
+@media (max-width: 72rem) {
+  .disc-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    row-gap: var(--space-8);
+  }
+
+  .disc-piece--a {
+    grid-column: span 4;
+  }
+
+  .disc-piece--b {
+    grid-column: span 2;
+    margin-top: var(--space-8);
+  }
+
+  .disc-piece--c {
+    grid-column: span 3;
+    margin-top: var(--space-5);
+  }
+
+  .disc-piece--d {
+    grid-column: span 3;
+    margin-top: var(--space-7);
+  }
+
+  .disc-piece--e {
+    grid-column: span 4;
+  }
+
+  .disc-piece--f {
+    grid-column: span 2;
+    margin-top: var(--space-6);
+  }
+}
+
+/* Mobile — 2 columns: dominant pieces span full width, others keep a
+ * light stagger. No offset ever creates horizontal overflow. */
 @media (max-width: 48rem) {
   .disc-hero__inner {
     min-height: 44svh;
@@ -338,22 +478,54 @@
     font-size: clamp(2.5rem, 9cqw, 5.5rem);
   }
 
-  .disc-item__row {
-    grid-template-columns: 3.5rem minmax(0, 1fr) auto 1.25rem;
-    gap: var(--space-3);
+  .disc-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-4);
+    row-gap: var(--space-6);
   }
 
-  .disc-item__index,
-  .disc-item__artist {
+  .disc-piece--a,
+  .disc-piece--d {
+    grid-column: span 2;
+    margin-top: 0;
+  }
+
+  .disc-piece--b {
+    grid-column: span 1;
+    margin-top: var(--space-5);
+  }
+
+  .disc-piece--c {
+    grid-column: span 1;
+    margin-top: var(--space-3);
+  }
+
+  .disc-piece--e {
+    grid-column: span 1;
+    margin-top: var(--space-4);
+  }
+
+  .disc-piece--f {
+    grid-column: span 1;
+    margin-top: var(--space-2);
+  }
+
+  .disc-piece__caption {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .disc-piece__index {
     display: none;
   }
 
-  .disc-item__panel-inner {
+  .disc-detail__inner {
     grid-template-columns: 1fr;
-    gap: var(--space-4);
+    gap: var(--space-5);
   }
+}
 
-  .disc-item__cover {
-    max-width: 14rem;
+@media (prefers-reduced-motion: reduce) {
+  .disc-detail__clip {
+    animation: none;
   }
 }

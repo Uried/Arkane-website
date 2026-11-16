@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { ArrowRight, Loader2 } from "lucide-react";
 import Reveal from "../components/Reveal";
+import SocialLinks from "../components/SocialLinks";
 import {
   contactKinds,
   MIN_FILL_MS,
@@ -369,8 +370,18 @@ export default function ContactPage() {
       <section className="contact-direct" aria-label={t("contact.direct")}>
         <div className="contact-direct__inner container">
           <Reveal>
-            <p className="label contact-direct__label">{t("contact.direct")}</p>
-            <p className="contact-direct__note">{t("contact.soon")}</p>
+            <div className="contact-direct__block">
+              <p className="label contact-direct__label">
+                {t("contact.direct")}
+              </p>
+              <p className="contact-direct__note">{t("contact.soon")}</p>
+            </div>
+          </Reveal>
+          <Reveal delay={80}>
+            <div className="contact-direct__block">
+              <p className="label contact-direct__label">{t("social.follow")}</p>
+              <SocialLinks />
+            </div>
           </Reveal>
         </div>
       </section>

@@ -24,6 +24,9 @@ export const dict = {
   "nav.main": { fr: "Navigation principale", en: "Main navigation" },
   "footer.rights": { fr: "Tous droits réservés.", en: "All rights reserved." },
 
+  "social.aria": { fr: "Réseaux sociaux", en: "Social media" },
+  "social.follow": { fr: "Suivre Arkane", en: "Follow Arkane" },
+
   "action.all": { fr: "Tout", en: "All" },
   "action.search": { fr: "Rechercher", en: "Search" },
   "action.consult": { fr: "Consulter", en: "Read" },
@@ -62,6 +65,7 @@ export const dict = {
     en: "No release matches this search.",
   },
   "releases.yearLabel": { fr: "Sorties", en: "Releases" },
+  "releases.listen": { fr: "Écouter", en: "Listen" },
 
   "news.filter": {
     fr: "Filtrer par type de publication",

@@ -17,8 +17,8 @@
   flex-direction: column;
   justify-content: flex-end;
   gap: var(--space-6);
-  min-height: 56svh;
-  padding-block: var(--space-8) var(--space-6);
+  min-height: 38svh;
+  padding-block: var(--space-7) var(--space-6);
 }
 
 .artists-hero__eyebrow {
@@ -367,9 +367,9 @@
 /* Mobile: compact horizontal rows — thumb left, body right. */
 @media (max-width: 40rem) {
   .artists-hero__inner {
-    min-height: 44svh;
+    min-height: 32svh;
     gap: var(--space-5);
-    padding-block: var(--space-7) var(--space-5);
+    padding-block: var(--space-6) var(--space-5);
   }
 
   .artists-hero__title {

@@ -20,3 +20,22 @@
 .site-footer__brand .logo {
   height: 1.5rem;
 }
+
+.site-footer__social .social-links {
+  gap: var(--space-5);
+}
+
+.site-footer__legal {
+  text-align: right;
+}
+
+@media (max-width: 48rem) {
+  .site-footer__inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .site-footer__legal {
+    text-align: left;
+  }
+}

@@ -288,8 +288,16 @@
 .contact-direct__inner {
   padding-block: var(--space-6);
   display: flex;
-  align-items: baseline;
-  gap: var(--space-5);
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-5) var(--space-7);
+}
+
+.contact-direct__block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
 }
 
 .contact-direct__label {

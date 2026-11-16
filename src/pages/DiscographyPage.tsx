@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { ChevronDown, ExternalLink, Search } from "lucide-react";
+import { Fragment, useEffect, useRef, useState } from "react";
+import { ArrowUpRight, ExternalLink, Search } from "lucide-react";
 import ReleasePlayer from "../components/ReleasePlayer";
 import {
   groupReleasesByYear,
@@ -16,6 +16,11 @@ import { useI18n } from "../lib/i18n-store";
 
 
 const kindOrder: ReleaseKind[] = ["album", "ep", "single"];
+
+/* Editorial composition — six slots repeating through the catalogue. Each
+ * slot carries its own column span and vertical offset (see CSS), so the
+ * grid stays asymmetric whatever the number of releases. */
+const SLOT_CYCLE = ["a", "b", "c", "d", "e", "f"] as const;
 
 function normalize(value: string) {
   return value
@@ -90,18 +95,18 @@ export default function DiscographyPage() {
               "-=0.25",
             );
 
-          /* Catalogue — one staggered entrance when the list scrolls in. */
+          /* Catalogue — one staggered entrance when the grid scrolls in. */
           gsap.fromTo(
-            ".disc-item",
-            { autoAlpha: 0, y: 24 },
+            ".disc-piece",
+            { autoAlpha: 0, y: 32 },
             {
               autoAlpha: 1,
               y: 0,
-              duration: 0.5,
+              duration: 0.6,
               ease: "power2.out",
-              stagger: 0.06,
+              stagger: 0.08,
               scrollTrigger: {
-                trigger: ".disc-catalog",
+                trigger: ".disc-grid",
                 start: "top 88%",
                 once: true,
               },
@@ -149,7 +154,7 @@ export default function DiscographyPage() {
         </div>
       </section>
 
-      {/* ----------------------------------------------------------- List */}
+      {/* ----------------------------------------------------------- Grid */}
       <section className="disc" aria-label={t("releases.catalog")}>
         <div className="disc__inner container">
           <div className="disc__toolbar">
@@ -191,30 +196,24 @@ export default function DiscographyPage() {
           </div>
 
           {numbered.length === 0 ? (
-            <p className="label disc__empty">
-              Aucune sortie ne correspond à cette recherche.
-            </p>
+            <p className="label disc__empty">{t("releases.empty")}</p>
           ) : (
-            <div className="disc-catalog">
+            <ol className="disc-grid" role="list">
               {numbered.map((group) => (
-                <section
-                  key={group.year ?? "undated"}
-                  className="disc-year"
-                  aria-label={
-                    group.year ? `${t("releases.yearLabel")} ${group.year}` : t("releases.yearLabel")
-                  }
-                >
+                <Fragment key={group.year ?? "undated"}>
                   {group.year && (
-                    <p className="disc-year__marker" aria-hidden="true">
+                    <li className="disc-grid__year" aria-hidden="true">
                       {group.year}
-                    </p>
+                    </li>
                   )}
-                  <ol className="disc-list" role="list">
-                    {group.items.map(({ release, index }) => (
-                      <DiscItem
-                        key={release.id}
+                  {group.items.map(({ release, index }) => (
+                    <Fragment key={release.id}>
+                      <DiscPiece
                         release={release}
                         index={index}
+                        slot={
+                          SLOT_CYCLE[(index - 1) % SLOT_CYCLE.length]
+                        }
                         open={openId === release.id}
                         onToggle={() =>
                           setOpenId((id) =>
@@ -222,11 +221,14 @@ export default function DiscographyPage() {
                           )
                         }
                       />
-                    ))}
-                  </ol>
-                </section>
+                      {openId === release.id && (
+                        <DiscDetail release={release} />
+                      )}
+                    </Fragment>
+                  ))}
+                </Fragment>
               ))}
-            </div>
+            </ol>
           )}
         </div>
       </section>
@@ -235,58 +237,79 @@ export default function DiscographyPage() {
 }
 
 /* --------------------------------------------------------------------------
- * One catalogue row + expandable detail (cover, player, platforms).
+ * One exhibited piece — artwork at its natural ratio + discreet caption.
  * ------------------------------------------------------------------------ */
 
-interface DiscItemProps {
+interface DiscPieceProps {
   release: ReleaseEntry;
   index: number;
+  slot: (typeof SLOT_CYCLE)[number];
   open: boolean;
   onToggle: () => void;
 }
 
-function DiscItem({ release, index, open, onToggle }: DiscItemProps) {
+function DiscPiece({ release, index, slot, open, onToggle }: DiscPieceProps) {
   const { t } = useI18n();
   return (
-    <li className={`disc-item${open ? " is-open" : ""}`}>
+    <li className={`disc-piece disc-piece--${slot}${open ? " is-open" : ""}`}>
       <button
         type="button"
-        className="disc-item__row"
+        className="disc-piece__hit"
         aria-expanded={open}
         onClick={onToggle}
       >
-        <span className="disc-item__index" aria-hidden="true">
-          {String(index).padStart(2, "0")}
-        </span>
-        <img
-          className="disc-item__thumb"
-          src={release.coverUrl}
-          alt=""
-          loading="lazy"
-          decoding="async"
-        />
-        <span className="disc-item__title">{release.title}</span>
-        {release.artistName && (
-          <span className="disc-item__artist">{release.artistName}</span>
-        )}
-        <span className="disc-item__kind">{t(`kind.${release.kind}` as DictKey)}</span>
-        <ChevronDown
-          className="disc-item__chevron"
-          size={16}
-          aria-hidden="true"
-        />
-      </button>
-
-      <div className="disc-item__panel">
-        <div className="disc-item__panel-inner">
+        <span className="disc-piece__media">
           <img
-            className="disc-item__cover"
+            className="disc-piece__cover"
             src={release.coverUrl}
             alt={release.coverAlt}
             loading="lazy"
             decoding="async"
           />
-          <div className="disc-item__side">
+          <span className="disc-piece__cue" aria-hidden="true">
+            {t("releases.listen")}
+            <ArrowUpRight size={13} />
+          </span>
+        </span>
+        <span className="disc-piece__caption">
+          <span className="disc-piece__index" aria-hidden="true">
+            {String(index).padStart(2, "0")}
+          </span>
+          <span className="disc-piece__heading">
+            <span className="disc-piece__title">{release.title}</span>
+            {release.artistName && (
+              <span className="disc-piece__artist">{release.artistName}</span>
+            )}
+          </span>
+          <span className="disc-piece__kind">
+            {t(`kind.${release.kind}` as DictKey)}
+          </span>
+        </span>
+      </button>
+    </li>
+  );
+}
+
+/* --------------------------------------------------------------------------
+ * Full-width detail — unfolds under the open piece (player + platforms).
+ * ------------------------------------------------------------------------ */
+
+function DiscDetail({ release }: { release: ReleaseEntry }) {
+  const { t } = useI18n();
+  return (
+    <li className="disc-detail">
+      <div className="disc-detail__clip">
+        <div className="disc-detail__inner">
+          <div className="disc-detail__meta">
+            <p className="disc-detail__title">{release.title}</p>
+            {release.artistName && (
+              <p className="disc-detail__artist">{release.artistName}</p>
+            )}
+            <p className="label disc-detail__kind">
+              {t(`kind.${release.kind}` as DictKey)}
+            </p>
+          </div>
+          <div className="disc-detail__body">
             <ReleasePlayer
               id={release.id}
               title={release.title}
@@ -294,11 +317,11 @@ function DiscItem({ release, index, open, onToggle }: DiscItemProps) {
               listenUrl={release.listenUrl}
             />
             {release.platforms && release.platforms.length > 0 && (
-              <ul className="disc-item__platforms" role="list">
+              <ul className="disc-detail__platforms" role="list">
                 {release.platforms.map((platform) => (
                   <li key={platform.label}>
                     <a
-                      className="disc-item__platform"
+                      className="disc-detail__platform"
                       href={platform.url}
                       target="_blank"
                       rel="noopener noreferrer"

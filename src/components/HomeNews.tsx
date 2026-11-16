@@ -1,4 +1,4 @@
-import { useEffect, useState, type KeyboardEvent } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { ArrowLeft, ArrowRight, Pause, Play } from "lucide-react";
 import ArkaneHero from "./ArkaneHero";
 import { sortedNews } from "../data/news";
@@ -22,6 +22,8 @@ export default function HomeNews() {
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(true);
   const [hovered, setHovered] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
 
   const count = items.length;
   const total = count + 1; /* last position = brand hero slide */
@@ -30,13 +32,25 @@ export default function HomeNews() {
   const entry = items[safeIndex];
 
   /* Auto-advance every 5s through news then the brand hero — off while
-   * paused, hovered, single slide or reduced-motion; resets each slide. */
+   * paused, hovered, keyboard-focused, single slide or reduced-motion;
+   * resets each slide. */
   useEffect(() => {
-    if (total < 2 || !playing || hovered) return;
+    if (total < 2 || !playing || hovered || focused) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const timer = setTimeout(() => setIndex((i) => (i + 1) % total), 5000);
     return () => clearTimeout(timer);
-  }, [safeIndex, total, playing, hovered]);
+  }, [safeIndex, total, playing, hovered, focused]);
+
+  /* Re-derive focus state on slide change: a focused node removed by the
+   * slide remount (key={entry.id}) never fires blur, so it can't be trusted. */
+  useEffect(() => {
+    const active = document.activeElement as HTMLElement | null;
+    setFocused(
+      !!active &&
+        !!rootRef.current?.contains(active) &&
+        active.matches(":focus-visible"),
+    );
+  }, [safeIndex]);
 
   if (items.length === 0) return null;
 
@@ -51,12 +65,20 @@ export default function HomeNews() {
 
   return (
     <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onFocus={() => setHovered(true)}
+      ref={rootRef}
+      /* Pause on keyboard focus only — a mouse click leaves focus on the
+       * control (and back-navigation restores it), which would freeze the
+       * rotation until something else happens to steal focus. */
+      onFocus={(e) =>
+        setFocused((e.target as HTMLElement).matches(":focus-visible"))
+      }
       onBlur={(e) => {
-        if (!e.currentTarget.contains(e.relatedTarget as Node))
-          setHovered(false);
+        const next = e.relatedTarget as HTMLElement | null;
+        setFocused(
+          !!next &&
+            e.currentTarget.contains(next) &&
+            next.matches(":focus-visible"),
+        );
       }}
       onKeyDown={onKeyDown}
     >
@@ -120,7 +142,14 @@ export default function HomeNews() {
           </div>
 
           {count > 1 && (
-            <div className="news-banner__nav container">
+            /* Pause on hover is scoped to the controls row: the banner fills
+             * the viewport, so pausing on banner hover would freeze the
+             * rotation almost permanently. */
+            <div
+              className="news-banner__nav container"
+              onMouseEnter={() => setHovered(true)}
+              onMouseLeave={() => setHovered(false)}
+            >
               <button
                 type="button"
                 className="news-banner__arrow"
