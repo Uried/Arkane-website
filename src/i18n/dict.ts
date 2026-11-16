@@ -10,6 +10,7 @@ export const dict = {
   "page.artists": { fr: "Artistes", en: "Artists" },
   "page.releases": { fr: "Discographie", en: "Discography" },
   "page.news": { fr: "Actualités", en: "News" },
+  "page.events": { fr: "Événements", en: "Events" },
   "page.contact": { fr: "Contact", en: "Contact" },
   "page.shop": { fr: "Boutique", en: "Shop" },
   "nav.home": { fr: "Accueil", en: "Home" },
@@ -65,6 +66,9 @@ export const dict = {
     en: "No release matches this search.",
   },
   "releases.yearLabel": { fr: "Sorties", en: "Releases" },
+  "releases.yearPrev": { fr: "Année précédente", en: "Previous year" },
+  "releases.yearNext": { fr: "Année suivante", en: "Next year" },
+  "releases.undated": { fr: "Non daté", en: "Undated" },
   "releases.listen": { fr: "Écouter", en: "Listen" },
 
   "news.filter": {
@@ -101,6 +105,14 @@ export const dict = {
   },
   "news.pick": { fr: "Choisir une actualité", en: "Choose a news item" },
 
+  "events.next": { fr: "Prochain rendez-vous", en: "Next rendez-vous" },
+  "events.upcoming": { fr: "À venir", en: "Upcoming" },
+  "events.archive": { fr: "Archives", en: "Archive" },
+  "events.empty": {
+    fr: "Aucun événement à afficher pour le moment.",
+    en: "No event to display for now.",
+  },
+
   "kind.sortie": { fr: "Sortie", en: "Release" },
   "kind.projet": { fr: "Projet", en: "Project" },
   "kind.artiste": { fr: "Artiste", en: "Artist" },
@@ -111,6 +123,13 @@ export const dict = {
   "kind.ep": { fr: "EP", en: "EP" },
   "kind.single": { fr: "Single", en: "Single" },
 
+  "contact.heroTitle": { fr: "Parlons.", en: "Let's talk." },
+  "contact.intro": {
+    fr: "Une question, une proposition, une collaboration ou simplement l'envie d'échanger ? Nous sommes à votre écoute.",
+    en: "A question, a proposal, a collaboration, or simply the desire to connect? We're listening.",
+  },
+  "contact.scroll": { fr: "Le formulaire", en: "The form" },
+  "contact.outro": { fr: "À très vite.", en: "See you soon." },
   "contact.legend": { fr: "Nature de la demande", en: "Nature of the request" },
   "contact.kind.artiste": { fr: "Proposition artistique", en: "Artist proposal" },
   "contact.kind.partenariat": { fr: "Partenariat", en: "Partnership" },

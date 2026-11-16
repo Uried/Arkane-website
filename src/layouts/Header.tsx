@@ -13,8 +13,9 @@ export default function Header() {
   const nav = navItemsByLang[lang];
 
   return (
-    <header className="site-header">
-      <div className="site-header__inner container">
+    <>
+      <header className="site-header">
+        <div className="site-header__inner container">
         <a
           className="site-header__brand"
           href="/"
@@ -84,6 +85,7 @@ export default function Header() {
           </button>
         </div>
       </div>
+      </header>
 
       <nav
         id="mobile-nav"
@@ -104,7 +106,25 @@ export default function Header() {
             </li>
           ))}
         </ul>
+
+        <div
+          className="mobile-nav__lang"
+          role="group"
+          aria-label={t("nav.lang.toggle")}
+        >
+          {(["fr", "en"] as const).map((l) => (
+            <button
+              key={l}
+              type="button"
+              className="site-header__lang-btn"
+              aria-pressed={lang === l}
+              onClick={() => setLang(l)}
+            >
+              {l.toUpperCase()}
+            </button>
+          ))}
+        </div>
       </nav>
-    </header>
+    </>
   );
 }

@@ -367,11 +367,9 @@ function ArtistTile({
     };
   }, [menuOpen]);
 
-  const playLabel = !hasExcerpt
-    ? `Aucun extrait disponible pour ${artist.name}`
-    : isPlaying
-      ? `Mettre en pause l'extrait de ${artist.name}`
-      : `Lire un extrait de ${artist.name}`;
+  const playLabel = isPlaying
+    ? `Mettre en pause l'extrait de ${artist.name}`
+    : `Lire un extrait de ${artist.name}`;
 
   return (
     <li
@@ -391,22 +389,26 @@ function ArtistTile({
             } as CSSProperties
           }
         />
-        <button
-          type="button"
-          className="artist-tile__play"
-          onClick={onTogglePlay}
-          disabled={!hasExcerpt}
-          aria-label={playLabel}
-          title={hasExcerpt ? undefined : t("player.excerptSoon")}
-        >
-          {isLoading ? (
-            <Loader2 className="artist-tile__spinner" size={18} aria-hidden="true" />
-          ) : isPlaying ? (
-            <Pause size={18} aria-hidden="true" />
-          ) : (
-            <Play size={18} aria-hidden="true" />
-          )}
-        </button>
+        {hasExcerpt && (
+          <button
+            type="button"
+            className="artist-tile__play"
+            onClick={onTogglePlay}
+            aria-label={playLabel}
+          >
+            {isLoading ? (
+              <Loader2
+                className="artist-tile__spinner"
+                size={18}
+                aria-hidden="true"
+              />
+            ) : isPlaying ? (
+              <Pause size={18} aria-hidden="true" />
+            ) : (
+              <Play size={18} aria-hidden="true" />
+            )}
+          </button>
+        )}
         <span className="artist-tile__eq" aria-hidden="true">
           <span />
           <span />
@@ -433,9 +435,6 @@ function ArtistTile({
           </button>
         </div>
 
-        {!hasExcerpt && !hasError && (
-          <p className="artist-tile__status">Extrait à venir</p>
-        )}
         {hasError && (
           <p className="artist-tile__status artist-tile__status--error">
             {t("player.error")}
@@ -455,32 +454,64 @@ function ArtistTile({
           />
         )}
 
-        {menuOpen && (
-          <div className="artist-tile__menu" role="menu" ref={menuPanelRef}>
-            {artist.platforms.length === 0 ? (
-              <p className="artist-tile__menu-empty">
-                {t("artists.noPlatforms")}
-              </p>
-            ) : (
-              <ul role="list">
-                {artist.platforms.map((platform) => (
-                  <li key={platform.label}>
-                    <a
-                      className="artist-tile__platform"
-                      href={platform.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      role="menuitem"
-                    >
-                      {platform.label}
-                      <ExternalLink size={12} aria-hidden="true" />
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        )}
+        {menuOpen &&
+          (artist.spotifyUri ? (
+            /* Artist with a Spotify URI — in-flow embed panel: the official
+             * player mounts lazily on first open, platform links below. */
+            <div className="artist-tile__embedbox" ref={menuPanelRef}>
+              <iframe
+                className="artist-tile__embed"
+                src={`https://open.spotify.com/embed/artist/${artist.spotifyUri.split(":").at(-1)}?utm_source=generator`}
+                title={`Écouter ${artist.name} sur Spotify`}
+                height={352}
+                loading="lazy"
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                allowFullScreen
+              />
+              {artist.platforms.length > 0 && (
+                <ul role="list">
+                  {artist.platforms.map((platform) => (
+                    <li key={platform.label}>
+                      <a
+                        className="artist-tile__platform"
+                        href={platform.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {platform.label}
+                        <ExternalLink size={12} aria-hidden="true" />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ) : (
+            <div className="artist-tile__menu" role="menu" ref={menuPanelRef}>
+              {artist.platforms.length === 0 ? (
+                <p className="artist-tile__menu-empty">
+                  {t("artists.noPlatforms")}
+                </p>
+              ) : (
+                <ul role="list">
+                  {artist.platforms.map((platform) => (
+                    <li key={platform.label}>
+                      <a
+                        className="artist-tile__platform"
+                        href={platform.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        role="menuitem"
+                      >
+                        {platform.label}
+                        <ExternalLink size={12} aria-hidden="true" />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
       </div>
     </li>
   );

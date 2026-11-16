@@ -1,5 +1,7 @@
 import type { Release } from "../types";
 import abats5Cover from "../../assets/Abats5-cover-album.jpg";
+import ceciExperienceCover from "../../assets/Ceci-est-une-experience-cover.jpg";
+import davinciCodeCover from "../../assets/Davinci-code-cover.jpeg";
 import dossierNoirCover from "../../assets/Dossier-noir-cover.jpg";
 import type { PlatformLink } from "./artists";
 
@@ -30,11 +32,57 @@ export interface ReleaseEntry extends Release {
 
 export const releases: ReleaseEntry[] = [
   {
+    id: "davinci-code",
+    slug: "davinci-code",
+    title: "Da Vinci Code",
+    kind: "album",
+    artistIds: [],
+    artistName: "2VINCI THE ALIEN",
+    releasedAt: "2026-11-13",
+    coverUrl: davinciCodeCover,
+    coverAlt: "Album cover — Da Vinci Code, 2VINCI THE ALIEN",
+    spotifyUrl: "https://open.spotify.com/album/6IM2bKqqxb2pGakSUcxSI5",
+    embedUrl:
+      "https://open.spotify.com/embed/album/6IM2bKqqxb2pGakSUcxSI5?utm_source=generator",
+    spotifyUri: "spotify:album:6IM2bKqqxb2pGakSUcxSI5",
+    listenUrl: "https://open.spotify.com/album/6IM2bKqqxb2pGakSUcxSI5",
+    platforms: [
+      {
+        label: "Spotify",
+        url: "https://open.spotify.com/album/6IM2bKqqxb2pGakSUcxSI5",
+      },
+    ],
+  },
+  {
+    id: "ceci-est-une-experience",
+    slug: "ceci-est-une-experience",
+    title: "Ceci est une expérience",
+    kind: "ep",
+    artistIds: [],
+    artistName: "Noria Simo",
+    releasedAt: "2026-10-13",
+    coverUrl: ceciExperienceCover,
+    coverAlt: "EP cover — Ceci est une expérience, Noria Simo",
+    spotifyUrl: "https://open.spotify.com/album/31h4uQAuel8bOPPE46BrSJ",
+    embedUrl:
+      "https://open.spotify.com/embed/album/31h4uQAuel8bOPPE46BrSJ?utm_source=generator",
+    spotifyUri: "spotify:album:31h4uQAuel8bOPPE46BrSJ",
+    listenUrl: "https://open.spotify.com/album/31h4uQAuel8bOPPE46BrSJ",
+    platforms: [
+      {
+        label: "Spotify",
+        url: "https://open.spotify.com/album/31h4uQAuel8bOPPE46BrSJ",
+      },
+    ],
+  },
+  {
     id: "abats-5",
     slug: "abats-5",
     title: "Abats 5",
     kind: "album",
     artistIds: [],
+    artistName: "Arkane Production",
+    releasedAt: "2026-06-08",
     coverUrl: abats5Cover,
     coverAlt: "Album cover — Abats 5",
     spotifyUrl: "https://open.spotify.com/album/6RSsaKMLPtOJT7iEkjnrbD",
@@ -55,7 +103,8 @@ export const releases: ReleaseEntry[] = [
     title: "Dossier Noir",
     kind: "album",
     artistIds: [],
-    artistName: "Elite Secret",
+    artistName: "Nassir-Kélian",
+    releasedAt: "2026-09-25",
     coverUrl: dossierNoirCover,
     coverAlt: "Album cover — Dossier Noir, Elite Secret",
     spotifyUrl: "https://open.spotify.com/album/58b61MBtuV3HjcBAtQIoMp",

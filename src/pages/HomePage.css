@@ -259,9 +259,8 @@
 
 .releases__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-5);
-  max-width: 56rem;
 }
 
 .release {
@@ -497,6 +496,10 @@
   /* Single column — the title can fill the whole grid width. */
   .hero__title {
     font-size: clamp(3rem, 17cqw, 11rem);
+  }
+
+  .releases__grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
   }
 
   .hero__side {

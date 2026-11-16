@@ -1,9 +1,11 @@
 /* ===========================================================================
- * Discographie — editorial asymmetric staggered grid.
+ * Discographie — vertical chronological frieze.
  *
- * Releases are exhibited like artworks: varied column spans, voluntary
- * vertical offsets, covers at their natural ratios. Clicking a piece unfolds
- * a full-width detail (integrated player + platform links).
+ * Releases hang on a thin central spine, alternating left and right, newest
+ * on top. Years sit above the covers in large editorial type; each piece is
+ * tied to the spine by a short tick. Covers keep their natural ratios while
+ * widths cycle (lg/md/sm) so the composition stays asymmetric. Clicking a
+ * piece unfolds a full-width detail (integrated player + platform links).
  * ========================================================================= */
 
 /* ------------------------------------------------------------- Hero ------ */
@@ -17,8 +19,8 @@
   flex-direction: column;
   justify-content: flex-end;
   gap: var(--space-6);
-  min-height: 56svh;
-  padding-block: var(--space-8) var(--space-6);
+  min-height: 38svh;
+  padding-block: var(--space-5) var(--space-6);
 }
 
 .disc-hero__eyebrow {
@@ -157,63 +159,215 @@
   color: var(--color-text-faint);
 }
 
-/* ---------------------------------------------------- Staggered grid ----- */
+/* ----------------------------------------------------- Year heading ------ */
 
-/* 12 columns — the six slots below place themselves into balanced,
- * offset rows (5+4+3 / 4+5+3 per row, staggered margins). */
-.disc-grid {
+/* The frieze pages one year at a time; jumping to another year scrolls the
+ * heading back under the sticky header. */
+.disc-yearhead {
+  scroll-margin-top: calc(var(--header-height) + var(--space-4));
+  padding-top: var(--space-4);
+}
+
+/* "Next year" link — way back toward the newest releases. */
+.disc-yearhead__back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-bottom: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  transition: color var(--duration-fast) var(--ease);
+}
+
+.disc-yearhead__back:hover {
+  color: var(--color-text);
+}
+
+.disc-yearhead__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-5);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-line);
+}
+
+/* The active year, loud and editorial — anchor of the whole page. */
+.disc-yearhead__year {
+  font-size: clamp(3.5rem, 11vw, 9rem);
+  font-weight: 900;
+  font-stretch: 118%;
+  text-transform: uppercase;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  color: var(--color-text);
+}
+
+.disc-yearhead__count {
+  color: var(--color-text-faint);
+  white-space: nowrap;
+}
+
+/* ----------------------------------------------- Previous-year gateway --- */
+
+.disc-yearnav {
+  display: flex;
+  justify-content: center;
+  padding-top: var(--space-8);
+}
+
+/* Big ghost year — outline type that fills with the accent on hover. */
+.disc-yearnav__btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-text-muted);
+}
+
+.disc-yearnav__caption {
+  color: var(--color-text-faint);
+  transition: color var(--duration-fast) var(--ease);
+}
+
+.disc-yearnav__year {
+  font-size: clamp(3rem, 10vw, 7.5rem);
+  font-weight: 900;
+  font-stretch: 118%;
+  text-transform: uppercase;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.35);
+  transition:
+    -webkit-text-stroke-color var(--duration-fast) var(--ease),
+    color var(--duration-fast) var(--ease);
+}
+
+.disc-yearnav__icon {
+  color: var(--color-text-faint);
+  transition:
+    color var(--duration-fast) var(--ease),
+    transform var(--duration-fast) var(--ease);
+}
+
+@media (hover: hover) {
+  .disc-yearnav__btn:hover .disc-yearnav__year,
+  .disc-yearnav__btn:focus-visible .disc-yearnav__year {
+    -webkit-text-stroke-color: var(--color-accent);
+  }
+
+  .disc-yearnav__btn:hover .disc-yearnav__icon,
+  .disc-yearnav__btn:focus-visible .disc-yearnav__icon {
+    color: var(--color-accent);
+    transform: translateY(4px);
+  }
+}
+
+/* ------------------------------------------------- Timeline / spine ------ */
+
+/* Horizontal breathing room reserved around the axis; the tick each piece
+ * extends toward the spine measures exactly half of it. */
+.disc-timeline {
+  --disc-gutter: clamp(3.5rem, 8vw, 8rem);
+  --disc-tick-y: clamp(1.5rem, 3vw, 2.6rem);
+  position: relative;
+}
+
+.disc-timeline__line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: var(--color-line-strong);
+  transform-origin: top center;
+}
+
+/* Two columns — every piece owns its row on one side of the spine only. */
+.disc-timeline__list {
   display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: var(--space-5);
-  row-gap: var(--space-9);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: var(--disc-gutter);
+  row-gap: clamp(var(--space-8), 14vh, 11rem);
   align-items: start;
-  padding: 0;
+  padding: var(--space-6) 0 0;
   list-style: none;
 }
 
-.disc-grid__year {
-  grid-column: 1 / -1;
-  font-size: clamp(2.75rem, 8vw, 7rem);
-  font-weight: 900;
-  font-stretch: 118%;
-  line-height: 1;
-  letter-spacing: -0.03em;
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.28);
-  user-select: none;
-}
-
-/* Slots — spans vary, vertical offsets create the editorial stagger.
- * Pieces keep their natural artwork ratio (no forced aspect-ratio). */
-.disc-piece--a {
-  grid-column: span 5;
-}
-
-.disc-piece--b {
-  grid-column: span 4;
-  margin-top: var(--space-9);
-}
-
-.disc-piece--c {
-  grid-column: span 3;
-  margin-top: var(--space-6);
-}
-
-.disc-piece--d {
-  grid-column: span 4;
-  margin-top: var(--space-8);
-}
-
-.disc-piece--e {
-  grid-column: span 5;
-}
-
-.disc-piece--f {
-  grid-column: span 3;
-  margin-top: var(--space-7);
-}
-
 /* ------------------------------------------------------------ Piece ------ */
+
+.disc-piece {
+  position: relative;
+  /* Date sizes itself on the piece's own width — always a single line. */
+  container-type: inline-size;
+}
+
+/* Odd entries hang right of the spine, even entries left — per the sketch. */
+.disc-piece--left {
+  grid-column: 1;
+  justify-self: end;
+}
+
+.disc-piece--right {
+  grid-column: 2;
+  justify-self: start;
+}
+
+/* Asymmetric widths — covers keep their natural ratio, never cropped. */
+.disc-piece--lg {
+  width: 100%;
+}
+
+.disc-piece--md {
+  width: 84%;
+}
+
+.disc-piece--sm {
+  width: 66%;
+}
+
+/* Tick — short connector from the piece's inner edge to the spine. */
+.disc-piece::before {
+  content: "";
+  position: absolute;
+  top: var(--disc-tick-y);
+  width: calc(var(--disc-gutter) / 2);
+  height: 1px;
+  background: var(--color-line-strong);
+}
+
+.disc-piece--left::before {
+  left: 100%;
+}
+
+.disc-piece--right::before {
+  right: 100%;
+}
+
+/* Node — small square sitting on the spine at the tick's end. */
+.disc-piece::after {
+  content: "";
+  position: absolute;
+  top: var(--disc-tick-y);
+  width: 7px;
+  height: 7px;
+  margin-top: -3px;
+  background: var(--color-text);
+}
+
+.disc-piece--left::after {
+  left: calc(100% + var(--disc-gutter) / 2);
+  transform: translateX(-50%);
+}
+
+.disc-piece--right::after {
+  right: calc(100% + var(--disc-gutter) / 2);
+  transform: translateX(50%);
+}
 
 .disc-piece__hit {
   display: flex;
@@ -221,6 +375,20 @@
   gap: var(--space-4);
   width: 100%;
   text-align: left;
+  color: var(--color-text);
+}
+
+/* Date — the loud editorial marker above each cover ("13-11-26"), sized
+ * in piece-relative cqw so "25-09-26" never wraps on narrow slots. */
+.disc-piece__date {
+  display: block;
+  white-space: nowrap;
+  font-size: min(clamp(1.9rem, 5.5vw, 5rem), 21cqw);
+  font-weight: 900;
+  font-stretch: 118%;
+  text-transform: uppercase;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
   color: var(--color-text);
 }
 
@@ -244,6 +412,14 @@
   .disc-piece__hit:focus-visible .disc-piece__cover {
     transform: scale(1.03);
     filter: brightness(1.06);
+  }
+
+  /* Tick and node subtly light up with their piece. */
+  .disc-piece:has(.disc-piece__hit:hover)::before,
+  .disc-piece:has(.disc-piece__hit:focus-visible)::before,
+  .disc-piece:has(.disc-piece__hit:hover)::after,
+  .disc-piece:has(.disc-piece__hit:focus-visible)::after {
+    background: var(--color-accent);
   }
 }
 
@@ -283,6 +459,12 @@
   transform: none;
 }
 
+/* Tick/node keep the accent while the detail is unfolded. */
+.disc-piece.is-open::before,
+.disc-piece.is-open::after {
+  background: var(--color-accent);
+}
+
 /* Caption — index · title/artist · kind, discreet and baseline-aligned. */
 .disc-piece__caption {
   display: grid;
@@ -311,9 +493,8 @@
   transition: color var(--duration-fast) var(--ease);
 }
 
-/* Dominant slots carry a stronger typographic weight. */
-.disc-piece--a .disc-piece__title,
-.disc-piece--e .disc-piece__title {
+/* Largest pieces carry a stronger typographic weight. */
+.disc-piece--lg .disc-piece__title {
   font-size: clamp(1.4rem, 2.4vw, 2.1rem);
 }
 
@@ -429,85 +610,87 @@
 
 /* ---------------------------------------------------------- Responsive --- */
 
-/* Tablet — 6 columns, asymmetry preserved in 2-piece rows. */
+/* Tablet — alternation preserved, tighter gutter and milder size steps. */
 @media (max-width: 72rem) {
-  .disc-grid {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+  .disc-timeline {
+    --disc-gutter: clamp(2.5rem, 6vw, 4.5rem);
+  }
+
+  .disc-piece--md {
+    width: 88%;
+  }
+
+  .disc-piece--sm {
+    width: 74%;
+  }
+
+  .disc-timeline__list {
     row-gap: var(--space-8);
-  }
-
-  .disc-piece--a {
-    grid-column: span 4;
-  }
-
-  .disc-piece--b {
-    grid-column: span 2;
-    margin-top: var(--space-8);
-  }
-
-  .disc-piece--c {
-    grid-column: span 3;
-    margin-top: var(--space-5);
-  }
-
-  .disc-piece--d {
-    grid-column: span 3;
-    margin-top: var(--space-7);
-  }
-
-  .disc-piece--e {
-    grid-column: span 4;
-  }
-
-  .disc-piece--f {
-    grid-column: span 2;
-    margin-top: var(--space-6);
   }
 }
 
-/* Mobile — 2 columns: dominant pieces span full width, others keep a
- * light stagger. No offset ever creates horizontal overflow. */
+/* Mobile — the spine slides left and every piece hangs on its right,
+ * keeping a single readable column with zero horizontal overflow. */
 @media (max-width: 48rem) {
   .disc-hero__inner {
-    min-height: 44svh;
+    min-height: 30svh;
     gap: var(--space-5);
-    padding-block: var(--space-7) var(--space-5);
+    padding-block: var(--space-4) var(--space-5);
   }
 
   .disc-hero__title {
     font-size: clamp(2.5rem, 9cqw, 5.5rem);
   }
 
-  .disc-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: var(--space-4);
-    row-gap: var(--space-6);
+  .disc-timeline {
+    --disc-tick-y: 1.4rem;
   }
 
-  .disc-piece--a,
-  .disc-piece--d {
-    grid-column: span 2;
-    margin-top: 0;
+  .disc-timeline__line {
+    left: 0.9rem;
   }
 
-  .disc-piece--b {
-    grid-column: span 1;
-    margin-top: var(--space-5);
+  .disc-timeline__list {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--space-7);
+    padding-left: 2.4rem;
   }
 
-  .disc-piece--c {
-    grid-column: span 1;
-    margin-top: var(--space-3);
+  .disc-piece--left,
+  .disc-piece--right {
+    grid-column: 1 / -1;
+    justify-self: start;
   }
 
-  .disc-piece--e {
-    grid-column: span 1;
-    margin-top: var(--space-4);
+  .disc-piece--lg {
+    width: 94%;
   }
 
-  .disc-piece--f {
-    grid-column: span 1;
-    margin-top: var(--space-2);
+  .disc-piece--md {
+    width: 82%;
+  }
+
+  .disc-piece--sm {
+    width: 66%;
+  }
+
+  /* All ticks point back to the left-hand spine. */
+  .disc-piece--left::before,
+  .disc-piece--right::before {
+    left: auto;
+    right: 100%;
+    width: 1.5rem;
+  }
+
+  .disc-piece--left::after,
+  .disc-piece--right::after {
+    left: auto;
+    right: calc(100% + 1.5rem);
+    transform: translateX(50%);
+  }
+
+  .disc-piece__date {
+    font-size: min(clamp(1.6rem, 8vw, 3.2rem), 22cqw);
   }
 
   .disc-piece__caption {

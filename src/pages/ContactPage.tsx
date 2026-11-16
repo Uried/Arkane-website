@@ -1,17 +1,15 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { ArrowRight, Loader2 } from "lucide-react";
-import Reveal from "../components/Reveal";
-import SocialLinks from "../components/SocialLinks";
+import { ArrowDown, ArrowRight, ArrowUpRight, Loader2 } from "lucide-react";
+import heroImg from "../../assets/Envelope-dust-contact.jpg";
 import {
-  contactKinds,
   MIN_FILL_MS,
   submitContact,
   validateContact,
   type ContactErrors,
-  type ContactKind,
   type SubmitStatus,
 } from "../lib/contact";
 import { siteConfig } from "../data/site";
+import { socialLinks } from "../data/socialLinks";
 import { gsap, ScrollTrigger, useGSAP } from "../lib/gsap";
 import "./ContactPage.css";
 import type { DictKey } from "../i18n/dict";
@@ -23,14 +21,11 @@ export default function ContactPage() {
   const { t } = useI18n();
   const scope = useRef<HTMLDivElement>(null);
   const mountedAt = useRef(0);
-  const [kind, setKind] = useState<ContactKind>("general");
   const [values, setValues] = useState(emptyValues);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [errors, setErrors] = useState<ContactErrors>({});
   const [status, setStatus] = useState<SubmitStatus>("idle");
   const [honeypot, setHoneypot] = useState("");
-
-  const selectedKind = contactKinds.find((k) => k.id === kind);
 
   useEffect(() => {
     mountedAt.current = Date.now();
@@ -53,34 +48,86 @@ export default function ContactPage() {
             defaults: { duration: 0.7, ease: "power3.out" },
           });
           intro
-            .from(".contact-hero__char", { yPercent: 110, stagger: 0.05 })
+            .fromTo(
+              ".contact-hero__media img",
+              { scale: 1.06, autoAlpha: 0.85 },
+              { scale: 1, autoAlpha: 1, duration: 1.6, ease: "power2.out" },
+              0,
+            )
             .from(
-              ".contact-hero__rule",
-              { scaleX: 0, duration: 0.6, ease: "power2.inOut" },
+              ".contact-hero__eyebrow",
+              { autoAlpha: 0, y: -10, duration: 0.5 },
+              0.25,
+            )
+            .from(
+              ".contact-hero__char",
+              { yPercent: 110, stagger: 0.03 },
+              0.35,
+            )
+            .from(
+              ".contact-hero__intro",
+              { autoAlpha: 0, y: 20, duration: 0.55 },
               "-=0.35",
             )
             .from(
-              ".contact-hero__meta > *",
-              { autoAlpha: 0, y: 12, duration: 0.45, stagger: 0.08 },
-              "-=0.25",
+              ".contact-hero__rule",
+              { scaleX: 0, duration: 0.6, ease: "power2.inOut" },
+              "-=0.3",
+            )
+            .from(
+              ".contact-hero__meta > .label, .contact-hero__scroll",
+              { autoAlpha: 0, duration: 0.4 },
+              "-=0.2",
             );
 
-          gsap.fromTo(
-            ".contact-kind",
-            { autoAlpha: 0, y: 20 },
-            {
-              autoAlpha: 1,
-              y: 0,
-              duration: 0.5,
-              ease: "power2.out",
-              stagger: 0.05,
-              scrollTrigger: {
-                trigger: ".contact-kinds__list",
-                start: "top 88%",
-                once: true,
+          const onEnter = (
+            targets: string,
+            trigger: string,
+            vars: gsap.TweenVars = {},
+          ) => {
+            const el = document.querySelector(trigger);
+            if (!el) return;
+            gsap.fromTo(
+              targets,
+              { autoAlpha: 0, y: 24 },
+              {
+                autoAlpha: 1,
+                y: 0,
+                duration: 0.55,
+                ease: "power2.out",
+                stagger: 0.06,
+                scrollTrigger: { trigger, start: "top 85%", once: true },
+                ...vars,
               },
-            },
+            );
+          };
+
+          onEnter(".contact-field", ".contact-form");
+          onEnter(".contact-form__heading, .contact-form__foot", ".contact-form");
+          onEnter(
+            ".contact-social__item",
+            ".contact-social__list",
+            { y: 16, stagger: 0.05 },
           );
+
+          const outro = document.querySelector(".contact-outro");
+          if (outro) {
+            gsap.fromTo(
+              ".contact-outro__char",
+              { yPercent: 110 },
+              {
+                yPercent: 0,
+                duration: 0.7,
+                ease: "power3.out",
+                stagger: 0.03,
+                scrollTrigger: {
+                  trigger: outro,
+                  start: "top 82%",
+                  once: true,
+                },
+              },
+            );
+          }
 
           document.fonts?.ready.then(() => ScrollTrigger.refresh());
         },
@@ -123,86 +170,62 @@ export default function ContactPage() {
     }
 
     setStatus("sending");
-    setStatus(await submitContact({ ...values, kind }));
+    setStatus(await submitContact({ ...values, kind: "general" }));
   };
 
   const fieldError = (field: keyof typeof emptyValues) =>
     touched[field] && errors[field] ? errors[field] : undefined;
 
+  const heroTitle = t("contact.heroTitle");
+
   return (
     <div ref={scope}>
       {/* ---------------------------------------------------------- Hero */}
       <section className="contact-hero" aria-labelledby="contact-title">
+        <div className="contact-hero__media" aria-hidden="true">
+          <img src={heroImg} alt="" fetchPriority="high" />
+        </div>
         <div className="contact-hero__inner container">
           <p className="label label--accent contact-hero__eyebrow">
-            {siteConfig.name}
+            {siteConfig.name} — {t("page.contact")}
           </p>
-          <h1 id="contact-title" className="contact-hero__title">
-            <span className="contact-hero__title-mask" aria-hidden="true">
-              {t("page.contact").split("").map((char, i) => (
-                <span key={i} className="contact-hero__char">
-                  {char}
-                </span>
-              ))}
-            </span>
-            <span className="visually-hidden">Contact</span>
-          </h1>
-          <div className="contact-hero__meta">
-            <span className="contact-hero__rule" aria-hidden="true" />
-            <span className="label">{t("contact.open")}</span>
+          <div className="contact-hero__body">
+            <h1 id="contact-title" className="contact-hero__title">
+              <span className="visually-hidden">{heroTitle}</span>
+              <span className="contact-hero__title-mask" aria-hidden="true">
+                {heroTitle.split("").map((char, i) => (
+                  <span key={i} className="contact-hero__char">
+                    {char === " " ? " " : char}
+                  </span>
+                ))}
+              </span>
+            </h1>
+            <p className="contact-hero__intro">{t("contact.intro")}</p>
+            <div className="contact-hero__meta">
+              <span className="contact-hero__rule" aria-hidden="true" />
+              <span className="label">{t("contact.open")}</span>
+              <a className="contact-hero__scroll" href="#contact-form">
+                <ArrowDown size={14} aria-hidden="true" />
+                <span className="label">{t("contact.scroll")}</span>
+              </a>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ------------------------------------------------- Request kind */}
-      <section className="contact-kinds" aria-labelledby="kinds-heading">
-        <div className="contact-kinds__inner container">
-          <fieldset className="contact-kinds__fieldset">
-            <legend id="kinds-heading" className="label contact-kinds__legend">
-              {t("contact.legend")}
-            </legend>
-            <div className="contact-kinds__list">
-              {contactKinds.map((k, i) => (
-                <label
-                  key={k.id}
-                  className={`contact-kind${kind === k.id ? " is-selected" : ""}`}
-                >
-                  <input
-                    className="visually-hidden"
-                    type="radio"
-                    name="contact-kind"
-                    value={k.id}
-                    checked={kind === k.id}
-                    onChange={() => setKind(k.id)}
-                  />
-                  <span className="contact-kind__index" aria-hidden="true">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span className="contact-kind__label">{t(`contact.kind.${k.id}` as DictKey)}</span>
-                  <span className="contact-kind__mark" aria-hidden="true" />
-                </label>
-              ))}
-            </div>
-          </fieldset>
-        </div>
-      </section>
+      {/* ------------------------------------------- Main : side + form */}
+      <section className="contact-main" aria-label={t("page.contact")}>
+        <div className="contact-main__grid container">
+          {/* ------------------------------------------------- Form */}
+          <div className="contact-main__form">
+            <h2 className="contact-form__heading">{t("contact.write")}</h2>
 
-      {/* ---------------------------------------------------------- Form */}
-      <section className="contact-form-section" aria-labelledby="form-heading">
-        <div className="contact-form__inner container">
-          <Reveal>
-            <h2 id="form-heading" className="contact-form__heading">
-              {t("contact.write")}
-              {selectedKind && (
-                <span className="label contact-form__kind">
-                  — {t(`contact.kind.${kind}` as DictKey)}
-                </span>
-              )}
-            </h2>
-          </Reveal>
-
-          <Reveal delay={120}>
-            <form className="contact-form" onSubmit={onSubmit} noValidate>
+            <form
+              id="contact-form"
+              className="contact-form"
+              onSubmit={onSubmit}
+              noValidate
+            >
               {/* Honeypot — invisible to humans, catnip to bots */}
               <input
                 className="contact-hp"
@@ -215,7 +238,7 @@ export default function ContactPage() {
                 aria-hidden="true"
               />
 
-              <div className="contact-form__grid">
+              <div className="contact-form__row">
                 <div className="contact-field">
                   <label className="label" htmlFor="contact-name">
                     {t("contact.name")}
@@ -305,7 +328,7 @@ export default function ContactPage() {
                 <textarea
                   id="contact-message"
                   name="message"
-                  rows={6}
+                  rows={5}
                   value={values.message}
                   onChange={update("message")}
                   onBlur={blur("message")}
@@ -362,27 +385,83 @@ export default function ContactPage() {
                 )}
               </div>
             </form>
-          </Reveal>
+          </div>
         </div>
       </section>
 
-      {/* --------------------------------------------------- Coordinates */}
-      <section className="contact-direct" aria-label={t("contact.direct")}>
-        <div className="contact-direct__inner container">
-          <Reveal>
-            <div className="contact-direct__block">
-              <p className="label contact-direct__label">
-                {t("contact.direct")}
-              </p>
-              <p className="contact-direct__note">{t("contact.soon")}</p>
-            </div>
-          </Reveal>
-          <Reveal delay={80}>
-            <div className="contact-direct__block">
-              <p className="label contact-direct__label">{t("social.follow")}</p>
-              <SocialLinks />
-            </div>
-          </Reveal>
+      {/* ----------------------------------------------------- Social */}
+      <section className="contact-social" aria-label={t("social.follow")}>
+        <div className="contact-social__inner container">
+          <div className="contact-social__head">
+            <span className="label label--accent">{t("social.follow")}</span>
+            <span className="contact-social__rule" aria-hidden="true" />
+            <span className="contact-social__count" aria-hidden="true">
+              {String(socialLinks.length).padStart(2, "0")}
+            </span>
+          </div>
+          <ul className="contact-social__list" role="list">
+            {socialLinks.map((social) =>
+              social.clickable && social.url ? (
+                <li key={social.id} className="contact-social__item">
+                  <a
+                    className="contact-social__row"
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span className="contact-social__name">{social.name}</span>
+                    <svg
+                      className="contact-social__icon"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                      focusable="false"
+                    >
+                      <path d={social.icon} fill="currentColor" />
+                    </svg>
+                    <ArrowUpRight
+                      className="contact-social__arrow"
+                      size={18}
+                      aria-hidden="true"
+                    />
+                  </a>
+                </li>
+              ) : (
+                <li
+                  key={social.id}
+                  className="contact-social__item is-static"
+                >
+                  <span className="contact-social__row">
+                    <span className="contact-social__name">{social.name}</span>
+                    <svg
+                      className="contact-social__icon"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                      focusable="false"
+                    >
+                      <path d={social.icon} fill="currentColor" />
+                    </svg>
+                  </span>
+                </li>
+              ),
+            )}
+          </ul>
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------ Outro */}
+      <section className="contact-outro" aria-hidden="true">
+        <div className="contact-outro__inner container">
+          <p className="contact-outro__line">
+            <span className="contact-outro__mask">
+              {t("contact.outro")
+                .split("")
+                .map((char, i) => (
+                  <span key={i} className="contact-outro__char">
+                    {char === " " ? " " : char}
+                  </span>
+                ))}
+            </span>
+          </p>
         </div>
       </section>
     </div>

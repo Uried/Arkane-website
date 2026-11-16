@@ -1,11 +1,18 @@
-import { Fragment, useEffect, useRef, useState } from "react";
-import { ArrowUpRight, ExternalLink, Search } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpRight,
+  ExternalLink,
+  Search,
+} from "lucide-react";
 import ReleasePlayer from "../components/ReleasePlayer";
 import {
   groupReleasesByYear,
   releases,
   sortedReleases,
   type ReleaseEntry,
+  type ReleaseGroup,
 } from "../data/releases";
 import { siteConfig } from "../data/site";
 import { gsap, ScrollTrigger, useGSAP } from "../lib/gsap";
@@ -17,10 +24,9 @@ import { useI18n } from "../lib/i18n-store";
 
 const kindOrder: ReleaseKind[] = ["album", "ep", "single"];
 
-/* Editorial composition — six slots repeating through the catalogue. Each
- * slot carries its own column span and vertical offset (see CSS), so the
- * grid stays asymmetric whatever the number of releases. */
-const SLOT_CYCLE = ["a", "b", "c", "d", "e", "f"] as const;
+/* Chronological frieze — cover widths cycle through the catalogue so the
+ * composition stays asymmetric whatever the number of releases (see CSS). */
+const SIZE_CYCLE = ["lg", "md", "sm"] as const;
 
 function normalize(value: string) {
   return value
@@ -29,14 +35,25 @@ function normalize(value: string) {
     .toLowerCase();
 }
 
+/* Compact release date — "13-11-26" (JJ-MM-AA). Year-only values pass
+ * through untouched; nothing is ever invented for missing fields. */
+function formatReleaseDate(release: ReleaseEntry): string | null {
+  if (!release.releasedAt) return null;
+  const [y, m, d] = release.releasedAt.split("-").map(Number);
+  if (!m || !d) return String(y);
+  return [d, m, y % 100].map((n) => String(n).padStart(2, "0")).join("-");
+}
+
 type KindFilter = ReleaseKind | "all";
 
 export default function DiscographyPage() {
   const { t } = useI18n();
   const scope = useRef<HTMLDivElement>(null);
+  const yearHeadRef = useRef<HTMLDivElement>(null);
   const [kind, setKind] = useState<KindFilter>("all");
   const [query, setQuery] = useState("");
   const [openId, setOpenId] = useState<string | null>(null);
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
   const availableKinds = new Set(releases.map((r) => r.kind));
 
@@ -51,14 +68,33 @@ export default function DiscographyPage() {
     }),
   );
 
+  /* One page per year — newest first; the frieze shows a single group and
+   * navigation carries the visitor one year down at a time. */
   const groups = groupReleasesByYear(filtered);
+  const keyOf = (group: ReleaseGroup) =>
+    group.year === null ? "undated" : String(group.year);
+  const activeIndex = Math.max(
+    0,
+    groups.findIndex((group) => keyOf(group) === selectedKey),
+  );
+  const activeGroup = groups[activeIndex];
+  const newerGroup = activeIndex > 0 ? groups[activeIndex - 1] : undefined;
+  const olderGroup =
+    activeIndex < groups.length - 1 ? groups[activeIndex + 1] : undefined;
 
-  /* Continuous catalogue numbering across groups. */
-  let itemIndex = 0;
-  const numbered = groups.map((group) => ({
-    ...group,
-    items: group.items.map((release) => ({ release, index: ++itemIndex })),
-  }));
+  const groupLabel = (group: ReleaseGroup) =>
+    group.year === null ? t("releases.undated") : String(group.year);
+
+  /* Jump to another year — close any open detail and bring the year
+   * heading back into view (smooth scroll honours prefers-reduced-motion
+   * through the global scroll-behavior rules). */
+  const jumpTo = (group: ReleaseGroup) => {
+    setSelectedKey(keyOf(group));
+    setOpenId(null);
+    requestAnimationFrame(() => {
+      yearHeadRef.current?.scrollIntoView({ block: "start" });
+    });
+  };
 
   /* Page-level SEO — static meta in index.html stays the site default. */
   useEffect(() => {
@@ -71,14 +107,13 @@ export default function DiscographyPage() {
       );
   }, [t]);
 
+  /* Hero intro — runs once, never replayed on year/filter changes. */
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
-
       mm.add(
         "(prefers-reduced-motion: no-preference)",
         () => {
-          /* Hero — title chars rise behind their mask, rule draws, meta fades. */
           const intro = gsap.timeline({
             defaults: { duration: 0.7, ease: "power3.out" },
           });
@@ -94,34 +129,87 @@ export default function DiscographyPage() {
               { autoAlpha: 0, y: 12, duration: 0.45, stagger: 0.08 },
               "-=0.25",
             );
+        },
+        scope,
+      );
+      return () => mm.revert();
+    },
+    { scope },
+  );
 
-          /* Catalogue — one staggered entrance when the grid scrolls in. */
+  /* Frieze — spine draw + per-piece entrances. Re-armed whenever the
+   * visible year (or the filtered list) changes the DOM. */
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+      mm.add(
+        "(prefers-reduced-motion: no-preference)",
+        () => {
+          /* Nothing to animate when the filtered catalogue is empty. */
+          if (!scope.current?.querySelector(".disc-timeline")) return;
+
+          /* Year heading — settles in with the frieze it introduces. */
           gsap.fromTo(
-            ".disc-piece",
-            { autoAlpha: 0, y: 32 },
+            ".disc-yearhead",
+            { autoAlpha: 0, y: 24 },
             {
               autoAlpha: 1,
               y: 0,
               duration: 0.6,
               ease: "power2.out",
-              stagger: 0.08,
               scrollTrigger: {
-                trigger: ".disc-grid",
-                start: "top 88%",
+                trigger: ".disc-yearhead",
+                start: "top 92%",
                 once: true,
               },
             },
           );
+
+          /* Spine — the central line draws itself while scrolling down. */
+          gsap.fromTo(
+            ".disc-timeline__line",
+            { scaleY: 0 },
+            {
+              scaleY: 1,
+              ease: "none",
+              scrollTrigger: {
+                trigger: ".disc-timeline",
+                start: "top 80%",
+                end: "bottom 85%",
+                scrub: 0.6,
+              },
+            },
+          );
+
+          /* Pieces — each slides in from its own side of the spine. */
+          gsap.utils.toArray<HTMLElement>(".disc-piece").forEach((piece) => {
+            const fromRight = piece.classList.contains("disc-piece--right");
+            gsap.fromTo(
+              piece,
+              { autoAlpha: 0, x: fromRight ? 44 : -44, y: 20 },
+              {
+                autoAlpha: 1,
+                x: 0,
+                y: 0,
+                duration: 0.8,
+                ease: "power3.out",
+                scrollTrigger: {
+                  trigger: piece,
+                  start: "top 86%",
+                  once: true,
+                },
+              },
+            );
+          });
 
           /* Re-measure trigger positions once webfonts settle the layout. */
           document.fonts?.ready.then(() => ScrollTrigger.refresh());
         },
         scope,
       );
-
       return () => mm.revert();
     },
-    { scope },
+    { scope, dependencies: [selectedKey, kind, query], revertOnUpdate: true },
   );
 
   return (
@@ -154,7 +242,7 @@ export default function DiscographyPage() {
         </div>
       </section>
 
-      {/* ----------------------------------------------------------- Grid */}
+      {/* ------------------------------------------------------- Timeline */}
       <section className="disc" aria-label={t("releases.catalog")}>
         <div className="disc__inner container">
           <div className="disc__toolbar">
@@ -195,25 +283,48 @@ export default function DiscographyPage() {
             </label>
           </div>
 
-          {numbered.length === 0 ? (
+          {!activeGroup ? (
             <p className="label disc__empty">{t("releases.empty")}</p>
           ) : (
-            <ol className="disc-grid" role="list">
-              {numbered.map((group) => (
-                <Fragment key={group.year ?? "undated"}>
-                  {group.year && (
-                    <li className="disc-grid__year" aria-hidden="true">
-                      {group.year}
-                    </li>
-                  )}
-                  {group.items.map(({ release, index }) => (
-                    <Fragment key={release.id}>
-                      <DiscPiece
+            <>
+              {/* ----------------------------------------- Year heading */}
+              <div className="disc-yearhead" ref={yearHeadRef}>
+                {newerGroup && (
+                  <button
+                    type="button"
+                    className="disc-yearhead__back"
+                    aria-label={`${t("releases.yearNext")} : ${groupLabel(newerGroup)}`}
+                    onClick={() => jumpTo(newerGroup)}
+                  >
+                    <ArrowUp size={12} aria-hidden="true" />
+                    {t("releases.yearNext")} — {groupLabel(newerGroup)}
+                  </button>
+                )}
+                <div className="disc-yearhead__row">
+                  <h2 className="disc-yearhead__year">
+                    {groupLabel(activeGroup)}
+                  </h2>
+                  <span className="label disc-yearhead__count">
+                    {t("releases.yearLabel")} —{" "}
+                    {String(activeGroup.items.length).padStart(2, "0")}
+                  </span>
+                </div>
+              </div>
+
+              {/* ---------------------------------------------- Frieze */}
+              <div className="disc-timeline">
+                <span className="disc-timeline__line" aria-hidden="true" />
+                <ol className="disc-timeline__list" role="list">
+                  {activeGroup.items.map((release, i) => {
+                    const index = i + 1;
+                    const side = index % 2 === 1 ? "right" : "left";
+                    return (
+                      <DiscTimelineItem
+                        key={release.id}
                         release={release}
                         index={index}
-                        slot={
-                          SLOT_CYCLE[(index - 1) % SLOT_CYCLE.length]
-                        }
+                        side={side}
+                        size={SIZE_CYCLE[i % SIZE_CYCLE.length]}
                         open={openId === release.id}
                         onToggle={() =>
                           setOpenId((id) =>
@@ -221,14 +332,35 @@ export default function DiscographyPage() {
                           )
                         }
                       />
-                      {openId === release.id && (
-                        <DiscDetail release={release} />
-                      )}
-                    </Fragment>
-                  ))}
-                </Fragment>
-              ))}
-            </ol>
+                    );
+                  })}
+                </ol>
+              </div>
+
+              {/* ------------------------------ Previous-year gateway */}
+              {olderGroup && (
+                <div className="disc-yearnav">
+                  <button
+                    type="button"
+                    className="disc-yearnav__btn"
+                    aria-label={`${t("releases.yearPrev")} : ${groupLabel(olderGroup)}`}
+                    onClick={() => jumpTo(olderGroup)}
+                  >
+                    <span className="label disc-yearnav__caption">
+                      {t("releases.yearPrev")}
+                    </span>
+                    <span className="disc-yearnav__year">
+                      {groupLabel(olderGroup)}
+                    </span>
+                    <ArrowDown
+                      className="disc-yearnav__icon"
+                      size={20}
+                      aria-hidden="true"
+                    />
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </section>
@@ -237,56 +369,75 @@ export default function DiscographyPage() {
 }
 
 /* --------------------------------------------------------------------------
- * One exhibited piece — artwork at its natural ratio + discreet caption.
+ * One entry on the frieze — year, artwork at its natural ratio, caption.
+ * Clicking unfolds the full-width detail (player + platforms).
  * ------------------------------------------------------------------------ */
 
-interface DiscPieceProps {
+interface DiscTimelineItemProps {
   release: ReleaseEntry;
   index: number;
-  slot: (typeof SLOT_CYCLE)[number];
+  /** Odd entries sit right of the spine, even entries left (per the sketch). */
+  side: "left" | "right";
+  size: (typeof SIZE_CYCLE)[number];
   open: boolean;
   onToggle: () => void;
 }
 
-function DiscPiece({ release, index, slot, open, onToggle }: DiscPieceProps) {
+function DiscTimelineItem({
+  release,
+  index,
+  side,
+  size,
+  open,
+  onToggle,
+}: DiscTimelineItemProps) {
   const { t } = useI18n();
+  const date = formatReleaseDate(release);
   return (
-    <li className={`disc-piece disc-piece--${slot}${open ? " is-open" : ""}`}>
-      <button
-        type="button"
-        className="disc-piece__hit"
-        aria-expanded={open}
-        onClick={onToggle}
+    <>
+      <li
+        className={`disc-piece disc-piece--${side} disc-piece--${size}${open ? " is-open" : ""}`}
       >
-        <span className="disc-piece__media">
-          <img
-            className="disc-piece__cover"
-            src={release.coverUrl}
-            alt={release.coverAlt}
-            loading="lazy"
-            decoding="async"
-          />
-          <span className="disc-piece__cue" aria-hidden="true">
-            {t("releases.listen")}
-            <ArrowUpRight size={13} />
+        <button
+          type="button"
+          className="disc-piece__hit"
+          aria-expanded={open}
+          onClick={onToggle}
+        >
+          {date !== null && (
+            <span className="disc-piece__date">{date}</span>
+          )}
+          <span className="disc-piece__media">
+            <img
+              className="disc-piece__cover"
+              src={release.coverUrl}
+              alt={release.coverAlt}
+              loading="lazy"
+              decoding="async"
+            />
+            <span className="disc-piece__cue" aria-hidden="true">
+              {t("releases.listen")}
+              <ArrowUpRight size={13} />
+            </span>
           </span>
-        </span>
-        <span className="disc-piece__caption">
-          <span className="disc-piece__index" aria-hidden="true">
-            {String(index).padStart(2, "0")}
+          <span className="disc-piece__caption">
+            <span className="disc-piece__index" aria-hidden="true">
+              {String(index).padStart(2, "0")}
+            </span>
+            <span className="disc-piece__heading">
+              <span className="disc-piece__title">{release.title}</span>
+              {release.artistName && (
+                <span className="disc-piece__artist">{release.artistName}</span>
+              )}
+            </span>
+            <span className="disc-piece__kind">
+              {t(`kind.${release.kind}` as DictKey)}
+            </span>
           </span>
-          <span className="disc-piece__heading">
-            <span className="disc-piece__title">{release.title}</span>
-            {release.artistName && (
-              <span className="disc-piece__artist">{release.artistName}</span>
-            )}
-          </span>
-          <span className="disc-piece__kind">
-            {t(`kind.${release.kind}` as DictKey)}
-          </span>
-        </span>
-      </button>
-    </li>
+        </button>
+      </li>
+      {open && <DiscDetail release={release} />}
+    </>
   );
 }
 

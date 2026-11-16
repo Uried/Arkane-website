@@ -11,8 +11,8 @@
   flex-direction: column;
   justify-content: flex-end;
   gap: var(--space-6);
-  min-height: 52svh;
-  padding-block: var(--space-8) var(--space-6);
+  min-height: 38svh;
+  padding-block: var(--space-5) var(--space-6);
 }
 
 .shop-hero__eyebrow {
@@ -262,9 +262,9 @@
 
 @media (max-width: 48rem) {
   .shop-hero__inner {
-    min-height: 42svh;
+    min-height: 30svh;
     gap: var(--space-5);
-    padding-block: var(--space-7) var(--space-5);
+    padding-block: var(--space-4) var(--space-5);
   }
 
   .shop-hero__title {

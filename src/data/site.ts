@@ -1,5 +1,5 @@
 import type { HomeContent, Lang, NavItem, SiteConfig } from "../types";
-import { getRelease, type ReleaseEntry } from "./releases";
+import { sortedReleases } from "./releases";
 
 /**
  * Single source of truth for brand-level content.
@@ -11,7 +11,7 @@ export const navItemsByLang: Record<Lang, NavItem[]> = {
     { label: "Accueil", path: "/" },
     { label: "Artistes", path: "/artists" },
     { label: "Sorties", path: "/releases" },
-    { label: "Journal", path: "/editorial" },
+    { label: "Événements", path: "/editorial" },
     { label: "Contact", path: "/contact" },
     { label: "Boutique", path: "/shop" },
   ],
@@ -19,7 +19,7 @@ export const navItemsByLang: Record<Lang, NavItem[]> = {
     { label: "Home", path: "/" },
     { label: "Artists", path: "/artists" },
     { label: "Releases", path: "/releases" },
-    { label: "Editorial", path: "/editorial" },
+    { label: "Events", path: "/editorial" },
     { label: "Contact", path: "/contact" },
     { label: "Shop", path: "/shop" },
   ],
@@ -36,11 +36,9 @@ export const siteConfig: SiteConfig = {
   nav: navItemsByLang.fr,
 };
 
-/* Homepage releases feature the latest entries of the canonical catalog
- * (src/data/releases.ts) — same source as the Discography page. */
-const featuredReleases = ["abats-5", "dossier-noir"]
-  .map(getRelease)
-  .filter((r): r is ReleaseEntry => Boolean(r));
+/* Homepage releases feature the three latest entries of the canonical
+ * catalog (src/data/releases.ts) — same source as the Discography page. */
+const featuredReleases = sortedReleases().slice(0, 3);
 
 const releaseFeatures = featuredReleases.map((release) => ({
   title: release.title,

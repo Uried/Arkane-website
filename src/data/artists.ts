@@ -29,6 +29,8 @@ export interface ArtistProfile extends Artist {
   imagePosition?: string;
   /** Local or remote audio excerpt. Absent = play control shows its empty state. */
   excerptUrl?: string;
+  /** Spotify artist URI (spotify:artist:…) — powers the in-tile embed player. */
+  spotifyUri?: string;
   /** Verified listening platforms for this artist only. */
   platforms: PlatformLink[];
 }
@@ -41,7 +43,13 @@ export const artists: ArtistProfile[] = [
     imageUrl: nassirKelianPortrait,
     imageAlt: "Nassir-Kelian at the piano in a dark studio",
     imagePosition: "55% 38%",
-    platforms: [],
+    spotifyUri: "spotify:artist:6eDlwdr1mDGyPA1SEva6by",
+    platforms: [
+      {
+        label: "Spotify",
+        url: "https://open.spotify.com/artist/6eDlwdr1mDGyPA1SEva6by",
+      },
+    ],
   },
   {
     id: "enzalevrai",
@@ -50,7 +58,13 @@ export const artists: ArtistProfile[] = [
     imageUrl: enzalevraiPortrait,
     imageAlt: "Enzalevrai performing with a microphone, in a red jacket",
     imagePosition: "45% 42%",
-    platforms: [],
+    spotifyUri: "spotify:artist:4rOLWfiFv0Y10e0q9HN78o",
+    platforms: [
+      {
+        label: "Spotify",
+        url: "https://open.spotify.com/artist/4rOLWfiFv0Y10e0q9HN78o",
+      },
+    ],
   },
   {
     id: "kemi2vinci",
@@ -59,7 +73,13 @@ export const artists: ArtistProfile[] = [
     imageUrl: kemiPortrait,
     imageAlt: "Kemi2vinci, black-and-white profile portrait",
     imagePosition: "50% 42%",
-    platforms: [],
+    spotifyUri: "spotify:artist:3dPlbHnwcIRXl3XJTcwXHx",
+    platforms: [
+      {
+        label: "Spotify",
+        url: "https://open.spotify.com/artist/3dPlbHnwcIRXl3XJTcwXHx",
+      },
+    ],
   },
   {
     id: "noria-simo",
@@ -68,6 +88,12 @@ export const artists: ArtistProfile[] = [
     imageUrl: noriaPortrait,
     imageAlt: "Noria Simo wearing a hat and glasses, close-up portrait",
     imagePosition: "50% 36%",
-    platforms: [],
+    spotifyUri: "spotify:artist:30I088eUaRcwvVCcmhXyOu",
+    platforms: [
+      {
+        label: "Spotify",
+        url: "https://open.spotify.com/artist/30I088eUaRcwvVCcmhXyOu",
+      },
+    ],
   },
 ];

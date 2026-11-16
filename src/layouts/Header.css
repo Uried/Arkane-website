@@ -181,8 +181,23 @@
   color: var(--color-accent-strong);
 }
 
+.mobile-nav__lang {
+  display: inline-flex;
+  align-self: flex-start;
+  margin-top: var(--space-6);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+}
+
+.mobile-nav__lang .site-header__lang-btn {
+  padding: 0.55rem 0.95rem;
+}
+
 @media (max-width: 48rem) {
   .site-nav {
+    display: none;
+  }
+  .site-header__lang {
     display: none;
   }
   .site-header__menu-btn {
