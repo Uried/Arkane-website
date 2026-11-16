@@ -3,10 +3,40 @@
  * ========================================================================= */
 
 .shop-hero {
+  position: relative;
+  overflow: hidden;
+  background: #000;
   border-bottom: 1px solid var(--color-line);
 }
 
+/* Background image — the exhibition wall, centred on the product niches. */
+.shop-hero__media {
+  position: absolute;
+  inset: 0;
+}
+
+.shop-hero__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 60% 50%;
+  will-change: transform, opacity;
+}
+
+/* Discreet veil for text legibility. */
+.shop-hero__media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.65) 0%, rgba(0, 0, 0, 0.25) 55%, rgba(0, 0, 0, 0.1) 100%),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.55), transparent 55%);
+}
+
 .shop-hero__inner {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -265,6 +295,10 @@
     min-height: 30svh;
     gap: var(--space-5);
     padding-block: var(--space-4) var(--space-5);
+  }
+
+  .shop-hero__meta {
+    display: none;
   }
 
   .shop-hero__title {

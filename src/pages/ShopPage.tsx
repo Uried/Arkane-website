@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { ArrowRight } from "lucide-react";
+import heroImg from "../../assets/Shop-hero-wall.jpg";
 import {
   categoryOrder,
   collectionOrder,
@@ -60,7 +61,13 @@ export default function ShopPage() {
             defaults: { duration: 0.7, ease: "power3.out" },
           });
           intro
-            .from(".shop-hero__char", { yPercent: 110, stagger: 0.05 })
+            .fromTo(
+              ".shop-hero__media img",
+              { scale: 1.06, autoAlpha: 0.85 },
+              { scale: 1, autoAlpha: 1, duration: 1.6, ease: "power2.out" },
+              0,
+            )
+            .from(".shop-hero__char", { yPercent: 110, stagger: 0.05 }, 0)
             .from(
               ".shop-hero__rule",
               { scaleX: 0, duration: 0.6, ease: "power2.inOut" },
@@ -106,6 +113,9 @@ export default function ShopPage() {
   return (
     <div ref={scope}>
       <section className="shop-hero" aria-labelledby="shop-title">
+        <div className="shop-hero__media" aria-hidden="true">
+          <img src={heroImg} alt="" fetchPriority="high" />
+        </div>
         <div className="shop-hero__inner container">
           <p className="label label--accent shop-hero__eyebrow">
             {siteConfig.name}
@@ -138,7 +148,11 @@ export default function ShopPage() {
         </div>
       </section>
 
-      <section className="shop" aria-label="Catalogue de la boutique">
+      <section
+        className="shop"
+        id="shop-products"
+        aria-label="Catalogue de la boutique"
+      >
         <div className="shop__inner container">
           {availableCollections.size > 0 && (
             <div
@@ -155,7 +169,7 @@ export default function ShopPage() {
                   setCategory("all");
                 }}
               >
-                {t("action.all")}
+                {t("action.allCollections")}
               </button>
               {collectionOrder
                 .filter((c) => availableCollections.has(c))
@@ -188,7 +202,7 @@ export default function ShopPage() {
                 aria-pressed={category === "all"}
                 onClick={() => setCategory("all")}
               >
-                {t("action.all")}
+                {t("action.allCategories")}
               </button>
               {categoryOrder
                 .filter((c) => availableCategories.has(c))

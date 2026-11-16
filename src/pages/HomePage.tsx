@@ -178,9 +178,6 @@ export default function HomePage() {
       <section className="outro" aria-labelledby="outro-heading">
         <div className="outro__inner container">
           <Reveal>
-            <p className="label label--accent">{outro.label}</p>
-          </Reveal>
-          <Reveal delay={100}>
             <h2 id="outro-heading" className="outro__heading">
               {outro.heading}
             </h2>

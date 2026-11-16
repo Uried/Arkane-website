@@ -6,6 +6,7 @@ import {
   ExternalLink,
   Search,
 } from "lucide-react";
+import heroImg from "../../assets/Discography-hero-case.jpg";
 import ReleasePlayer from "../components/ReleasePlayer";
 import {
   groupReleasesByYear,
@@ -118,7 +119,17 @@ export default function DiscographyPage() {
             defaults: { duration: 0.7, ease: "power3.out" },
           });
           intro
-            .from(".disc-hero__char", { yPercent: 110, stagger: 0.04 })
+            .fromTo(
+              ".disc-hero__media img",
+              { scale: 1.06, autoAlpha: 0.85 },
+              { scale: 1, autoAlpha: 1, duration: 1.6, ease: "power2.out" },
+              0,
+            )
+            .from(
+              ".disc-hero__char",
+              { yPercent: 110, stagger: 0.04 },
+              0.3,
+            )
             .from(
               ".disc-hero__rule",
               { scaleX: 0, duration: 0.6, ease: "power2.inOut" },
@@ -216,6 +227,9 @@ export default function DiscographyPage() {
     <div ref={scope}>
       {/* ---------------------------------------------------------- Hero */}
       <section className="disc-hero" aria-labelledby="discography-title">
+        <div className="disc-hero__media" aria-hidden="true">
+          <img src={heroImg} alt="" fetchPriority="high" />
+        </div>
         <div className="disc-hero__inner container">
           <p className="label label--accent disc-hero__eyebrow">
             {siteConfig.name}

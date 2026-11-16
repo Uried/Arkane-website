@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { ArrowRight } from "lucide-react";
+import heroImg from "../../assets/Events-hero-crowd.jpg";
 import { artists, type ArtistProfile } from "../data/artists";
 import { news, type NewsEntry } from "../data/news";
 import { siteConfig } from "../data/site";
@@ -169,7 +170,17 @@ export default function EditorialPage() {
             defaults: { duration: 0.7, ease: "power3.out" },
           });
           intro
-            .from(".ev-hero__char", { yPercent: 110, stagger: 0.04 })
+            .fromTo(
+              ".ev-hero__media img",
+              { scale: 1.06, autoAlpha: 0.85 },
+              { scale: 1, autoAlpha: 1, duration: 1.6, ease: "power2.out" },
+              0,
+            )
+            .from(
+              ".ev-hero__char",
+              { yPercent: 110, stagger: 0.04 },
+              0.3,
+            )
             .from(
               ".ev-hero__rule",
               { scaleX: 0, duration: 0.6, ease: "power2.inOut" },
@@ -285,6 +296,9 @@ export default function EditorialPage() {
     <div ref={scope}>
       {/* ---------------------------------------------------------- Hero */}
       <section className="ev-hero" aria-labelledby="events-title">
+        <div className="ev-hero__media" aria-hidden="true">
+          <img src={heroImg} alt="" fetchPriority="high" />
+        </div>
         <div className="ev-hero__inner container">
           <p className="label label--accent ev-hero__eyebrow">
             {siteConfig.name}

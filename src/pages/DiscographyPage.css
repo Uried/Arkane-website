@@ -11,10 +11,40 @@
 /* ------------------------------------------------------------- Hero ------ */
 
 .disc-hero {
+  position: relative;
+  overflow: hidden;
+  background: #000;
   border-bottom: 1px solid var(--color-line);
 }
 
+/* Background image — the collector case, centred on the records. */
+.disc-hero__media {
+  position: absolute;
+  inset: 0;
+}
+
+.disc-hero__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 65% 50%;
+  will-change: transform, opacity;
+}
+
+/* Discreet veil for text legibility. */
+.disc-hero__media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.65) 0%, rgba(0, 0, 0, 0.25) 55%, rgba(0, 0, 0, 0.1) 100%),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.55), transparent 55%);
+}
+
 .disc-hero__inner {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -636,6 +666,10 @@
     min-height: 30svh;
     gap: var(--space-5);
     padding-block: var(--space-4) var(--space-5);
+  }
+
+  .disc-hero__media img {
+    object-position: 68% 50%;
   }
 
   .disc-hero__title {

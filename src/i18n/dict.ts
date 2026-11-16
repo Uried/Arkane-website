@@ -29,6 +29,14 @@ export const dict = {
   "social.follow": { fr: "Suivre Arkane", en: "Follow Arkane" },
 
   "action.all": { fr: "Tout", en: "All" },
+  "action.allCollections": {
+    fr: "Toutes collections",
+    en: "All collections",
+  },
+  "action.allCategories": {
+    fr: "Toutes catégories",
+    en: "All categories",
+  },
   "action.search": { fr: "Rechercher", en: "Search" },
   "action.consult": { fr: "Consulter", en: "Read" },
   "action.send": { fr: "Envoyer", en: "Send" },
