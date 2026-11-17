@@ -13,8 +13,8 @@ export const dict = {
   "page.events": { fr: "Événements", en: "Events" },
   "page.contact": { fr: "Contact", en: "Contact" },
   "page.shop": { fr: "Boutique", en: "Shop" },
-  "page.team": { fr: "L'équipe", en: "Team" },
-  "nav.team": { fr: "L'équipe", en: "Team" },
+  "page.team": { fr: "À propos", en: "About" },
+  "nav.team": { fr: "À propos", en: "About" },
   "nav.home": { fr: "Accueil", en: "Home" },
   "nav.artists": { fr: "Artistes", en: "Artists" },
   "nav.releases": { fr: "Sorties", en: "Releases" },
@@ -115,24 +115,24 @@ export const dict = {
   },
   "news.pick": { fr: "Choisir une actualité", en: "Choose a news item" },
 
-  "team.title1": { fr: "Ceux qui font", en: "The people" },
-  "team.title2": { fr: "Arkane.", en: "behind Arkane." },
   "team.intro": {
-    fr: "Derrière les sorties, les visuels et les concerts, une équipe accompagne la vision d'Arkane Production — les personnes qui portent le label au quotidien.",
-    en: "Behind the releases, the visuals and the shows, a team carries Arkane Production's vision — the people who drive the label every day.",
+    fr: "Arkane Production est une structure indépendante née d'une vision singulière et d'une identité affirmée. Elle évolue dans l'univers de la musique et porte une approche qui lui est propre, guidée par une volonté de construire une identité forte et reconnaissable.",
+    en: "Arkane Production is an independent structure born of a singular vision and an affirmed identity. It moves within the world of music and carries an approach of its own, guided by the will to build a strong and recognisable identity.",
   },
-  "team.collective": { fr: "Collectif", en: "Collective" },
-  "team.members": { fr: "membres", en: "members" },
+  "team.intro2": {
+    fr: "Derrière Arkane, il y a aussi des femmes et des hommes qui contribuent à faire vivre cette structure.",
+    en: "Behind Arkane, there are also women and men who help bring this structure to life.",
+  },
+  "team.labelTag": { fr: "Structure indépendante", en: "Independent structure" },
+  "team.peopleLabel": {
+    fr: "Les visages d'Arkane",
+    en: "The faces of Arkane",
+  },
   "team.empty": {
     fr: "Les membres de l'équipe seront présentés prochainement.",
     en: "Team members will be introduced soon.",
   },
   "team.links": { fr: "Profils", en: "Profiles" },
-  "team.outroLabel": { fr: "La maison", en: "The house" },
-  "team.outro": {
-    fr: "Arkane Production est un collectif : derrière chaque sortie, des mains, des voix, des décisions.",
-    en: "Arkane Production is a collective: behind every release, hands, voices, decisions.",
-  },
 
   "events.next": { fr: "Prochain rendez-vous", en: "Next rendez-vous" },
   "events.upcoming": { fr: "À venir", en: "Upcoming" },

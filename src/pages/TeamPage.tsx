@@ -1,13 +1,12 @@
 import { useEffect, useRef } from "react";
 import { ExternalLink } from "lucide-react";
-import Reveal from "../components/Reveal";
 import { sortedTeam, type TeamMember } from "../data/team";
 import { siteConfig } from "../data/site";
 import { gsap, useGSAP } from "../lib/gsap";
 import { useI18n } from "../lib/i18n-store";
 import "./TeamPage.css";
 
-/** One title line — chars rise behind their mask on the intro. */
+/** One masked title line — chars rise on the intro. */
 function TitleLine({ text }: { text: string }) {
   return (
     <span className="team-hero__line">
@@ -22,8 +21,8 @@ function TitleLine({ text }: { text: string }) {
   );
 }
 
-/** Editorial row — portrait left or right, alternating via CSS. */
-function TeamMemberRow({
+/** Principal profile — large grayscale portrait, name and role beneath. */
+function FeatureProfile({
   member,
   index,
 }: {
@@ -32,33 +31,70 @@ function TeamMemberRow({
 }) {
   const { t, pick } = useI18n();
   return (
-    <article className="team-member">
-      <span className="team-member__index" aria-hidden="true">
-        {String(index + 1).padStart(2, "0")}
-      </span>
-      {member.photoUrl && (
-        <div className="team-member__media">
+    <article className="team-feature">
+      <div className="team-feature__media">
+        {member.photoUrl && (
           <img
             src={member.photoUrl}
             alt={member.photoAlt ? pick(member.photoAlt) : member.name}
-            loading="lazy"
+            loading={index === 0 ? "eager" : "lazy"}
             decoding="async"
           />
-        </div>
-      )}
-      <div className="team-member__body">
-        <h3 className="team-member__name">{member.name}</h3>
-        <p className="team-member__role label">{pick(member.role)}</p>
-        {member.bio && <p className="team-member__bio">{pick(member.bio)}</p>}
+        )}
+        <span className="team-feature__index" aria-hidden="true">
+          {String(index + 1).padStart(2, "0")}
+        </span>
+      </div>
+      <div className="team-feature__body">
+        <h3 className="team-feature__name">{member.name}</h3>
+        <p className="team-feature__role label">{pick(member.role)}</p>
+        {member.bio && <p className="team-feature__bio">{pick(member.bio)}</p>}
         {member.links && member.links.length > 0 && (
           <ul
-            className="team-member__links"
+            className="team-feature__links"
             aria-label={`${t("team.links")} — ${member.name}`}
           >
             {member.links.map((link) => (
               <li key={link.url}>
                 <a
-                  className="team-member__link label"
+                  className="team-feature__link label"
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {pick(link.label)}
+                  <ExternalLink size={12} aria-hidden="true" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </article>
+  );
+}
+
+/** Typographic row — functions without photography: role, name, bio only. */
+function TeamRow({ member, index }: { member: TeamMember; index: number }) {
+  const { t, pick } = useI18n();
+  return (
+    <article className="team-row">
+      <span className="team-row__index" aria-hidden="true">
+        {String(index + 1).padStart(2, "0")}
+      </span>
+      <p className="team-row__role">{pick(member.role)}</p>
+      <div className="team-row__body">
+        {member.name && <h4 className="team-row__name">{member.name}</h4>}
+        {member.bio && <p className="team-row__bio">{pick(member.bio)}</p>}
+        {member.links && member.links.length > 0 && (
+          <ul
+            className="team-row__links"
+            aria-label={`${t("team.links")} — ${member.name}`}
+          >
+            {member.links.map((link) => (
+              <li key={link.url}>
+                <a
+                  className="team-row__link label"
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -79,6 +115,8 @@ export default function TeamPage() {
   const { t } = useI18n();
   const scope = useRef<HTMLDivElement>(null);
   const members = sortedTeam();
+  const featured = members.filter((m) => m.featured);
+  const rest = members.filter((m) => !m.featured);
 
   useEffect(() => {
     document.title = `${t("page.team")} — ${siteConfig.name}`;
@@ -95,29 +133,31 @@ export default function TeamPage() {
           defaults: { duration: 0.7, ease: "power3.out" },
         });
         intro
-          .from(".team-hero__char", { yPercent: 110, stagger: 0.025 })
+          .from(".team-hero__char", { yPercent: 110, stagger: 0.03 })
           .from(
             ".team-hero__rule",
             { scaleX: 0, duration: 0.6, ease: "power2.inOut" },
             "-=0.4",
           )
           .from(
-            ".team-hero__meta > *:not(.team-hero__rule)",
-            { autoAlpha: 0, y: 12, duration: 0.45, stagger: 0.08 },
+            ".team-hero__intro > *",
+            { autoAlpha: 0, y: 14, duration: 0.5, stagger: 0.1 },
             "-=0.25",
           );
 
-        /* Member rows — photo slides in, text rises. */
-        const rows = scope.current?.querySelectorAll(".team-member");
-        rows?.forEach((row) => {
-          gsap.from(row, {
-            autoAlpha: 0,
-            y: 40,
-            duration: 0.8,
-            ease: "power2.out",
-            scrollTrigger: { trigger: row, start: "top 88%", once: true },
+        /* Portraits and typographic rows — quiet rises on scroll. */
+        scope.current
+          ?.querySelectorAll(".team-feature, .team-row")
+          .forEach((el, i) => {
+            gsap.from(el, {
+              autoAlpha: 0,
+              y: 36,
+              duration: 0.8,
+              delay: (i % 2) * 0.12,
+              ease: "power2.out",
+              scrollTrigger: { trigger: el, start: "top 88%", once: true },
+            });
           });
-        });
       });
       return () => mm.revert();
     },
@@ -129,50 +169,51 @@ export default function TeamPage() {
       {/* ---------------------------------------------------------- Hero */}
       <section className="team-hero" aria-labelledby="team-title">
         <div className="team-hero__inner container">
-          <p className="label team-hero__eyebrow">{siteConfig.name}</p>
+          <p className="label label--accent team-hero__eyebrow">
+            {t("page.team")}
+          </p>
           <h1 className="team-hero__title" id="team-title">
-            <TitleLine text={t("team.title1")} />
-            <TitleLine text={t("team.title2")} />
-            <span className="visually-hidden">
-              {t("team.title1")} {t("team.title2")}
-            </span>
+            <TitleLine text="Arkane" />
+            <TitleLine text="Production" />
+            <span className="visually-hidden">{siteConfig.name}</span>
           </h1>
           <div className="team-hero__meta">
             <span className="team-hero__rule" aria-hidden="true" />
-            <span className="label team-hero__count">
-              {members.length > 0
-                ? `${String(members.length).padStart(2, "0")} ${t("team.members")}`
-                : t("team.collective")}
-            </span>
+            <span className="label team-hero__count">{t("team.labelTag")}</span>
           </div>
-          <p className="team-hero__intro">{t("team.intro")}</p>
+          <div className="team-hero__intro">
+            <p>{t("team.intro")}</p>
+            <p>{t("team.intro2")}</p>
+          </div>
         </div>
       </section>
 
-      {/* ------------------------------------------------------- Members */}
-      <section className="team-members" aria-label={t("page.team")}>
-        <div className="team-members__inner container">
-          {members.length === 0 ? (
-            <p className="label team-members__empty">{t("team.empty")}</p>
-          ) : (
-            <ol className="team-members__list" role="list">
-              {members.map((member, i) => (
+      {/* ------------------------------------------ Les visages d'Arkane */}
+      <section className="team-people" aria-label={t("team.peopleLabel")}>
+        <div className="team-people__inner container">
+          <h2 className="team-people__label label">{t("team.peopleLabel")}</h2>
+
+          {featured.length > 0 && (
+            <div className="team-featured__grid">
+              {featured.map((member, i) => (
+                <FeatureProfile key={member.id} member={member} index={i} />
+              ))}
+            </div>
+          )}
+
+          {rest.length > 0 && (
+            <ol className="team-rows__list" role="list">
+              {rest.map((member, i) => (
                 <li key={member.id}>
-                  <TeamMemberRow member={member} index={i} />
+                  <TeamRow member={member} index={i} />
                 </li>
               ))}
             </ol>
           )}
-        </div>
-      </section>
 
-      {/* --------------------------------------------------------- Outro */}
-      <section className="team-outro" aria-label={t("team.outroLabel")}>
-        <div className="team-outro__inner container">
-          <Reveal>
-            <p className="label team-outro__label">{t("team.outroLabel")}</p>
-            <p className="team-outro__statement">{t("team.outro")}</p>
-          </Reveal>
+          {members.length === 0 && (
+            <p className="label team-members__empty">{t("team.empty")}</p>
+          )}
         </div>
       </section>
     </div>

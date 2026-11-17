@@ -1,7 +1,9 @@
 /* ===========================================================================
- * L'équipe — « Ceux qui font Arkane. »
- * Editorial backstage: two-line masked title, alternating member rows,
- * silver accents only (no red on this page).
+ * À propos — Arkane Production.
+ * Hero « ARKANE / PRODUCTION » + courte présentation, puis
+ * « Les visages d'Arkane » — portraits des principaux, fonctions sans
+ * photo en rangs typographiques.
+ * Silver accents only — no red on this page.
  * ========================================================================= */
 
 /* ------------------------------------------------------------- Hero ------ */
@@ -15,7 +17,7 @@
   flex-direction: column;
   justify-content: flex-end;
   gap: var(--space-6);
-  min-height: 44svh;
+  min-height: 52svh;
   padding-block: var(--space-5) var(--space-6);
 }
 
@@ -25,26 +27,39 @@
   gap: var(--space-3);
 }
 
-/* Silver marker — no accent red on this page. */
 .team-hero__eyebrow::before {
   content: "";
   width: 0.6em;
   height: 0.6em;
-  background: rgba(255, 255, 255, 0.55);
+  background: var(--color-accent);
 }
 
-/* Two intentional lines — each word stays whole, chars rise per line. */
+/* Two intentional lines at different sizes — "PRODUCTION" is the longest
+ * word (10 chars) and drives the cqw factor; "ARKANE" gets the louder line. */
 .team-hero__title {
-  font-size: clamp(3rem, 8cqw, 9rem);
-  font-weight: 900;
-  font-stretch: 118%;
   text-transform: uppercase;
   letter-spacing: -0.04em;
-  line-height: 0.92;
+  line-height: 0.9;
 }
 
 .team-hero__line {
   display: block;
+}
+
+.team-hero__line:nth-child(1) {
+  font-size: clamp(3.5rem, 13cqw, 12rem);
+  font-weight: 900;
+  font-stretch: 118%;
+}
+
+/* Second line — same outline treatment as the Home hero "PRODUCTION". */
+.team-hero__line:nth-child(2) {
+  font-size: clamp(2rem, 8cqw, 7rem);
+  font-weight: 900;
+  font-stretch: 116%;
+  letter-spacing: -0.02em;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.85);
 }
 
 .team-hero__line-mask {
@@ -75,84 +90,85 @@
   color: var(--color-text);
 }
 
+/* Short editorial description — two quiet paragraphs. */
 .team-hero__intro {
-  max-width: 46ch;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 52ch;
+}
+
+.team-hero__intro p {
   font-size: var(--text-lg);
-  line-height: 1.55;
+  line-height: 1.6;
   color: var(--color-text-muted);
 }
 
-/* ---------------------------------------------------------- Members ------ */
+/* -------------------------------------------------------------- People --- */
 
-.team-members__inner {
-  padding-block: var(--space-7) var(--space-8);
-}
-
-.team-members__empty {
-  display: block;
+.team-people__inner {
   padding-block: var(--space-8);
+}
+
+.team-people__label {
+  margin-bottom: var(--space-7);
   color: var(--color-text-faint);
 }
 
-.team-members__list {
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.team-member {
-  position: relative;
+/* Asymmetric editorial pair — the second portrait drops a step. */
+.team-featured__grid {
   display: grid;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
-  align-items: center;
-  gap: clamp(var(--space-5), 5vw, var(--space-8));
-  padding-block: var(--space-7);
-  border-bottom: 1px solid var(--color-line);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(var(--space-5), 6vw, var(--space-9));
 }
 
-/* Alternating composition — even members flip the photo right. */
-.team-member:nth-child(even) {
-  grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+.team-feature:nth-child(even) {
+  margin-top: var(--space-9);
 }
 
-.team-member:nth-child(even) .team-member__media {
-  order: 2;
-}
-
-/* Ghost index — same device as releases/editorial rows. */
-.team-member__index {
-  position: absolute;
-  top: var(--space-5);
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  letter-spacing: var(--tracking-wider);
-  color: var(--color-text-faint);
-}
-
-.team-member__media {
+.team-feature__media {
+  position: relative;
   overflow: hidden;
   aspect-ratio: 4 / 5;
-  background: var(--color-surface, #0a0a0a);
+  background: var(--color-surface);
 }
 
-.team-member__media img {
+.team-feature__media img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: grayscale(1);
+  /* Nassir-Kelian is centred; Tilana sits upper-third of her frame. */
+  object-position: 50% 30%;
+  /* Home hero photo treatment. */
+  filter: grayscale(1) contrast(1.04) brightness(0.92);
+  transition: transform 1.2s var(--ease);
+  will-change: transform;
 }
 
-/* Members without a photo stay a pure typographic row (no placeholder). */
-.team-member__body {
-  min-width: 0;
+.team-feature:hover .team-feature__media img {
+  transform: scale(1.03);
 }
 
-.team-member__name {
+/* Ghost index pinned on the portrait corner. */
+.team-feature__index {
+  position: absolute;
+  top: var(--space-4);
+  left: var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-text-faint);
+  mix-blend-mode: difference;
+}
+
+.team-feature__body {
+  padding-top: var(--space-5);
+}
+
+.team-feature__name {
   overflow-wrap: break-word;
-  font-size: clamp(2.4rem, 5cqw, 4.5rem);
+  font-size: clamp(2rem, 4.5cqw, 3.8rem);
   font-weight: 900;
   font-stretch: 118%;
   text-transform: uppercase;
@@ -160,19 +176,18 @@
   line-height: 0.95;
 }
 
-.team-member__role {
+.team-feature__role {
   margin-top: var(--space-3);
-  color: rgba(255, 255, 255, 0.55);
 }
 
-.team-member__bio {
+.team-feature__bio {
   margin-top: var(--space-4);
-  max-width: 55ch;
+  max-width: 50ch;
   line-height: 1.6;
   color: var(--color-text-muted);
 }
 
-.team-member__links {
+.team-feature__links {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-4);
@@ -181,7 +196,7 @@
   list-style: none;
 }
 
-.team-member__link {
+.team-feature__link {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
@@ -190,66 +205,130 @@
   transition: color var(--duration-fast) var(--ease);
 }
 
-.team-member__link:hover,
-.team-member__link:focus-visible {
+.team-feature__link:hover,
+.team-feature__link:focus-visible {
   color: var(--color-text);
 }
 
-/* ------------------------------------------------------------- Outro ----- */
+/* ------------------------------------------------- Functions, no photo --- */
 
-.team-outro {
-  border-top: 1px solid var(--color-line);
+.team-rows__list {
+  margin: var(--space-7) 0 0;
+  padding: 0;
+  list-style: none;
 }
 
-.team-outro__inner {
-  padding-block: var(--space-8) var(--space-9);
+/* Typographic row — ghost index · loud function · name/bio column. */
+.team-row {
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 5fr) minmax(0, 6fr);
+  align-items: baseline;
+  gap: var(--space-5);
+  padding-block: var(--space-5);
+  border-bottom: 1px solid var(--color-line);
 }
 
-.team-outro__label {
-  margin-bottom: var(--space-4);
+.team-row__index {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wider);
   color: var(--color-text-faint);
 }
 
-.team-outro__statement {
-  max-width: 24ch;
-  font-size: clamp(1.8rem, 4cqw, 3.6rem);
+.team-row__role {
+  min-width: 0;
+  overflow-wrap: break-word;
+  font-size: clamp(1.5rem, 3.2cqw, 2.6rem);
   font-weight: 800;
-  font-stretch: 116%;
+  font-stretch: 114%;
+  text-transform: uppercase;
   letter-spacing: -0.02em;
-  line-height: 1.15;
+  line-height: 1.05;
+}
+
+.team-row__body {
+  min-width: 0;
+}
+
+.team-row__name {
+  overflow-wrap: break-word;
+  font-size: var(--text-lg);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.team-row__bio {
+  margin-top: var(--space-2);
+  max-width: 55ch;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+.team-row__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-3);
+  padding: 0;
+  list-style: none;
+}
+
+.team-row__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease);
+}
+
+.team-row__link:hover,
+.team-row__link:focus-visible {
+  color: var(--color-text);
+}
+
+/* -------------------------------------------------------------- Empty ---- */
+
+.team-members__empty {
+  display: block;
+  padding-block: var(--space-8);
+  color: var(--color-text-faint);
 }
 
 /* ------------------------------------------------------------ Mobile ----- */
 
 @media (max-width: 48rem) {
   .team-hero__inner {
-    min-height: 34svh;
+    min-height: 44svh;
     gap: var(--space-5);
     padding-block: var(--space-4) var(--space-5);
   }
 
-  .team-hero__title {
-    font-size: clamp(2.2rem, 8cqw, 5rem);
+  .team-hero__line:nth-child(1) {
+    font-size: clamp(2.8rem, 13cqw, 5.5rem);
   }
 
-  .team-member,
-  .team-member:nth-child(even) {
+  .team-hero__line:nth-child(2) {
+    font-size: clamp(1.6rem, 8cqw, 3.4rem);
+  }
+
+  /* Portraits stack, keep their full width — no shrink. */
+  .team-featured__grid {
     grid-template-columns: 1fr;
-    gap: var(--space-5);
-    padding-block: var(--space-6);
+    gap: var(--space-8);
   }
 
-  .team-member:nth-child(even) .team-member__media {
-    order: 0;
+  .team-feature:nth-child(even) {
+    margin-top: 0;
   }
 
-  .team-member__index {
-    position: static;
-    margin-bottom: var(--space-3);
+  .team-row {
+    grid-template-columns: 2.5rem 1fr;
+    gap: var(--space-3) var(--space-4);
+    padding-block: var(--space-5);
   }
 
-  .team-member__media {
-    aspect-ratio: 16 / 11;
-    max-width: 22rem;
+  .team-row__body {
+    grid-column: 2;
   }
 }
