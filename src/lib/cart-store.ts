@@ -23,7 +23,18 @@ export const CART_STORAGE_KEY = "arkane-cart";
 export function loadCart(): CartItem[] {
   try {
     const raw = localStorage.getItem(CART_STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as CartItem[]) : [];
+    if (!raw) return [];
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    /* Drop malformed entries — shape-validate before trusting qty. */
+    return parsed.filter(
+      (i): i is CartItem =>
+        typeof i === "object" &&
+        i !== null &&
+        typeof (i as CartItem).productId === "string" &&
+        typeof (i as CartItem).qty === "number" &&
+        (i as CartItem).qty > 0,
+    );
   } catch {
     return [];
   }

@@ -13,6 +13,8 @@ export const dict = {
   "page.events": { fr: "Événements", en: "Events" },
   "page.contact": { fr: "Contact", en: "Contact" },
   "page.shop": { fr: "Boutique", en: "Shop" },
+  "page.team": { fr: "L'équipe", en: "Team" },
+  "nav.team": { fr: "L'équipe", en: "Team" },
   "nav.home": { fr: "Accueil", en: "Home" },
   "nav.artists": { fr: "Artistes", en: "Artists" },
   "nav.releases": { fr: "Sorties", en: "Releases" },
@@ -112,6 +114,25 @@ export const dict = {
     en: "Resume autoplay",
   },
   "news.pick": { fr: "Choisir une actualité", en: "Choose a news item" },
+
+  "team.title1": { fr: "Ceux qui font", en: "The people" },
+  "team.title2": { fr: "Arkane.", en: "behind Arkane." },
+  "team.intro": {
+    fr: "Derrière les sorties, les visuels et les concerts, une équipe accompagne la vision d'Arkane Production — les personnes qui portent le label au quotidien.",
+    en: "Behind the releases, the visuals and the shows, a team carries Arkane Production's vision — the people who drive the label every day.",
+  },
+  "team.collective": { fr: "Collectif", en: "Collective" },
+  "team.members": { fr: "membres", en: "members" },
+  "team.empty": {
+    fr: "Les membres de l'équipe seront présentés prochainement.",
+    en: "Team members will be introduced soon.",
+  },
+  "team.links": { fr: "Profils", en: "Profiles" },
+  "team.outroLabel": { fr: "La maison", en: "The house" },
+  "team.outro": {
+    fr: "Arkane Production est un collectif : derrière chaque sortie, des mains, des voix, des décisions.",
+    en: "Arkane Production is a collective: behind every release, hands, voices, decisions.",
+  },
 
   "events.next": { fr: "Prochain rendez-vous", en: "Next rendez-vous" },
   "events.upcoming": { fr: "À venir", en: "Upcoming" },

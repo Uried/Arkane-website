@@ -13,11 +13,23 @@ import {
   loadCart,
   type CartContextValue,
 } from "./cart-store";
+import { getProduct } from "../data/products";
 
 /** Cart state provider — persists to localStorage, drives the drawer. */
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, dispatch] = useReducer(cartReducer, undefined, loadCart);
   const [isOpen, setOpen] = useState(false);
+
+  /* Drop persisted lines whose product no longer exists — the badge counted
+   * them while the drawer filtered them out (ghost count bug). */
+  useEffect(() => {
+    items.forEach((item) => {
+      if (!getProduct(item.productId)) {
+        dispatch({ type: "remove", key: cartKey(item) });
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- one-time prune
+  }, []);
 
   useEffect(() => {
     try {

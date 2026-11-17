@@ -1,0 +1,255 @@
+/* ===========================================================================
+ * L'équipe — « Ceux qui font Arkane. »
+ * Editorial backstage: two-line masked title, alternating member rows,
+ * silver accents only (no red on this page).
+ * ========================================================================= */
+
+/* ------------------------------------------------------------- Hero ------ */
+
+.team-hero {
+  border-bottom: 1px solid var(--color-line);
+}
+
+.team-hero__inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--space-6);
+  min-height: 44svh;
+  padding-block: var(--space-5) var(--space-6);
+}
+
+.team-hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* Silver marker — no accent red on this page. */
+.team-hero__eyebrow::before {
+  content: "";
+  width: 0.6em;
+  height: 0.6em;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+/* Two intentional lines — each word stays whole, chars rise per line. */
+.team-hero__title {
+  font-size: clamp(3rem, 8cqw, 9rem);
+  font-weight: 900;
+  font-stretch: 118%;
+  text-transform: uppercase;
+  letter-spacing: -0.04em;
+  line-height: 0.92;
+}
+
+.team-hero__line {
+  display: block;
+}
+
+.team-hero__line-mask {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.team-hero__char {
+  display: inline-block;
+  will-change: transform;
+}
+
+.team-hero__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.team-hero__rule {
+  flex: 1;
+  height: 1px;
+  background: var(--color-line-strong);
+  transform-origin: left;
+}
+
+.team-hero__count {
+  color: var(--color-text);
+}
+
+.team-hero__intro {
+  max-width: 46ch;
+  font-size: var(--text-lg);
+  line-height: 1.55;
+  color: var(--color-text-muted);
+}
+
+/* ---------------------------------------------------------- Members ------ */
+
+.team-members__inner {
+  padding-block: var(--space-7) var(--space-8);
+}
+
+.team-members__empty {
+  display: block;
+  padding-block: var(--space-8);
+  color: var(--color-text-faint);
+}
+
+.team-members__list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.team-member {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  align-items: center;
+  gap: clamp(var(--space-5), 5vw, var(--space-8));
+  padding-block: var(--space-7);
+  border-bottom: 1px solid var(--color-line);
+}
+
+/* Alternating composition — even members flip the photo right. */
+.team-member:nth-child(even) {
+  grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+}
+
+.team-member:nth-child(even) .team-member__media {
+  order: 2;
+}
+
+/* Ghost index — same device as releases/editorial rows. */
+.team-member__index {
+  position: absolute;
+  top: var(--space-5);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-text-faint);
+}
+
+.team-member__media {
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  background: var(--color-surface, #0a0a0a);
+}
+
+.team-member__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1);
+}
+
+/* Members without a photo stay a pure typographic row (no placeholder). */
+.team-member__body {
+  min-width: 0;
+}
+
+.team-member__name {
+  overflow-wrap: break-word;
+  font-size: clamp(2.4rem, 5cqw, 4.5rem);
+  font-weight: 900;
+  font-stretch: 118%;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+}
+
+.team-member__role {
+  margin-top: var(--space-3);
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.team-member__bio {
+  margin-top: var(--space-4);
+  max-width: 55ch;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+.team-member__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+  padding: 0;
+  list-style: none;
+}
+
+.team-member__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease);
+}
+
+.team-member__link:hover,
+.team-member__link:focus-visible {
+  color: var(--color-text);
+}
+
+/* ------------------------------------------------------------- Outro ----- */
+
+.team-outro {
+  border-top: 1px solid var(--color-line);
+}
+
+.team-outro__inner {
+  padding-block: var(--space-8) var(--space-9);
+}
+
+.team-outro__label {
+  margin-bottom: var(--space-4);
+  color: var(--color-text-faint);
+}
+
+.team-outro__statement {
+  max-width: 24ch;
+  font-size: clamp(1.8rem, 4cqw, 3.6rem);
+  font-weight: 800;
+  font-stretch: 116%;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+/* ------------------------------------------------------------ Mobile ----- */
+
+@media (max-width: 48rem) {
+  .team-hero__inner {
+    min-height: 34svh;
+    gap: var(--space-5);
+    padding-block: var(--space-4) var(--space-5);
+  }
+
+  .team-hero__title {
+    font-size: clamp(2.2rem, 8cqw, 5rem);
+  }
+
+  .team-member,
+  .team-member:nth-child(even) {
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+    padding-block: var(--space-6);
+  }
+
+  .team-member:nth-child(even) .team-member__media {
+    order: 0;
+  }
+
+  .team-member__index {
+    position: static;
+    margin-bottom: var(--space-3);
+  }
+
+  .team-member__media {
+    aspect-ratio: 16 / 11;
+    max-width: 22rem;
+  }
+}

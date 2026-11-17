@@ -82,6 +82,8 @@ export const products: ShopProduct[] = [
     },
     collection: "signature",
     currency: "XAF",
+    priceCents: 800000,
+    inStock: true,
     category: "vetement",
     images: [
       {
@@ -104,6 +106,8 @@ export const products: ShopProduct[] = [
     },
     collection: "signature",
     currency: "XAF",
+    priceCents: 1500000,
+    inStock: true,
     category: "vetement",
     images: [
       {
@@ -126,6 +130,8 @@ export const products: ShopProduct[] = [
     },
     collection: "signature",
     currency: "XAF",
+    priceCents: 1500000,
+    inStock: true,
     category: "vetement",
     images: [
       {
@@ -148,6 +154,8 @@ export const products: ShopProduct[] = [
     },
     collection: "signature",
     currency: "XAF",
+    priceCents: 600000,
+    inStock: true,
     category: "accessoire",
     images: [
       {
@@ -170,6 +178,8 @@ export const products: ShopProduct[] = [
     },
     collection: "signature",
     currency: "XAF",
+    priceCents: 400000,
+    inStock: true,
     category: "accessoire",
     images: [
       {
@@ -192,6 +202,8 @@ export const products: ShopProduct[] = [
     },
     collection: "signature",
     currency: "XAF",
+    priceCents: 1200000,
+    inStock: true,
     category: "accessoire",
     images: [
       {
@@ -214,6 +226,8 @@ export const products: ShopProduct[] = [
     },
     collection: "signature",
     currency: "XAF",
+    priceCents: 150000,
+    inStock: true,
     category: "accessoire",
     images: [
       {
@@ -241,6 +255,8 @@ export const products: ShopProduct[] = [
     },
     collection: "limited",
     currency: "XAF",
+    priceCents: 3500000,
+    inStock: true,
     category: "edition",
     limited: true,
     featured: true,
@@ -265,6 +281,8 @@ export const products: ShopProduct[] = [
     },
     collection: "limited",
     currency: "XAF",
+    priceCents: 2500000,
+    inStock: true,
     category: "edition",
     limited: true,
     images: [
@@ -329,6 +347,8 @@ export const products: ShopProduct[] = [
     },
     collection: "limited",
     currency: "XAF",
+    priceCents: 4500000,
+    inStock: true,
     category: "accessoire",
     limited: true,
     images: [
@@ -352,6 +372,8 @@ export const products: ShopProduct[] = [
     },
     collection: "limited",
     currency: "XAF",
+    priceCents: 2000000,
+    inStock: true,
     category: "accessoire",
     limited: true,
     images: [
@@ -375,6 +397,8 @@ export const products: ShopProduct[] = [
     },
     collection: "limited",
     currency: "XAF",
+    priceCents: 4000000,
+    inStock: true,
     category: "accessoire",
     limited: true,
     images: [

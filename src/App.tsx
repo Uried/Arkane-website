@@ -10,6 +10,7 @@ import EditorialPage from "./pages/EditorialPage";
 import HomePage from "./pages/HomePage";
 import ProductPage from "./pages/ProductPage";
 import ShopPage from "./pages/ShopPage";
+import TeamPage from "./pages/TeamPage";
 
 export default function App() {
   /* Minimal pathname switch — NavItem paths are plain hrefs; a real router
@@ -26,6 +27,8 @@ export default function App() {
     <ArtistsPage />
   ) : pathname.startsWith("/releases") ? (
     <DiscographyPage />
+  ) : pathname.startsWith("/team") ? (
+    <TeamPage />
   ) : pathname.startsWith("/contact") ? (
     <ContactPage />
   ) : pathname.startsWith("/editorial") ? (

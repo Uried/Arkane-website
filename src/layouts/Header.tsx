@@ -23,7 +23,6 @@ export default function Header() {
           onClick={() => setMenuOpen(false)}
         >
           <Logo />
-          <span className="site-header__name">{siteConfig.shortName}</span>
         </a>
 
         <nav className="site-nav" aria-label={t("nav.main")}>

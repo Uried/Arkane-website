@@ -4,7 +4,6 @@ import heroImg from "../../assets/Shop-hero-wall.jpg";
 import {
   categoryOrder,
   collectionOrder,
-  formatPrice,
   products,
   type ProductCategory,
   type ProductCollection,
@@ -275,11 +274,6 @@ export default function ShopPage() {
                           {pick(product.name)}
                         </span>
                       </span>
-                      {product.priceCents != null && (
-                        <span className="shop-tile__price label">
-                          {formatPrice(product.priceCents)}
-                        </span>
-                      )}
                     </span>
                   </a>
                 </li>

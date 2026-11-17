@@ -18,22 +18,16 @@
 
 .site-header__brand {
   display: inline-flex;
-  /* Baseline of the image = its bottom edge: the wordmark sits on the
-   * exact base line of the dome glyph. */
-  align-items: baseline;
-  gap: var(--space-3);
+  align-items: center;
   color: var(--color-text);
+}
+
+.site-header__brand .logo {
+  height: 2.75rem;
 }
 
 .site-header__brand:hover {
   color: var(--color-text);
-}
-
-.site-header__name {
-  font-weight: 700;
-  font-size: var(--text-sm);
-  letter-spacing: var(--tracking-widest);
-  text-transform: uppercase;
 }
 
 /* Desktop nav */
